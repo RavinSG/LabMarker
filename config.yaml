@@ -1,0 +1,29 @@
+defaults:
+  - override hydra/job_logging: colorlog
+  - override hydra/hydra_logging: colorlog
+connection:
+  host_name: cse.unsw.edu.au
+  username: z5380598
+  private_key: /Users/z5380598/.ssh/tutoring
+  use_pass: False
+paths:
+  known_hosts: /Users/z5380598/.ssh/known_hosts
+
+hydra:
+  job:
+    # prevent switching directories when running functions
+    chdir: False
+    env_set:
+      # enable printing full stack trace
+      HYDRA_FULL_ERROR: 1
+  # hydra to disable creating output folders
+  output_subdir: null
+  run:
+    dir: .
+  job_logging:
+    formatters:
+      colorlog:
+        datefmt: '%d-%m-%y %H:%M:%S'
+    root:
+      level: WARN
+      handlers: [ console ]
