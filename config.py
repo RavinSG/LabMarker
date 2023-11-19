@@ -1,4 +1,6 @@
-import colorlog, logging
+import colorlog
+import logging
+from typing import List
 from dataclasses import dataclass
 
 
@@ -25,12 +27,20 @@ class Connection:
 @dataclass
 class Paths:
     known_hosts: str
+    lab_save_path: str
+
+
+@dataclass
+class Marking:
+    term: str
+    class_names: List[str]
 
 
 @dataclass
 class Config:
     connection: Connection
     paths: Paths
+    marking: Marking
 
 
 file_handler = logging.FileHandler('main.log', mode='w')

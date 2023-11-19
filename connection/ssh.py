@@ -1,5 +1,7 @@
+import os
 import paramiko
 from getpass import getpass
+from stat import S_ISDIR, S_ISREG
 
 from config import Config, logger
 
@@ -49,9 +51,33 @@ class Client:
                 print("Authentication failed, please check whether password/key is correct.")
                 exit(1)
 
-    def execute(self, command):
+        self.sftp_client = self.client.open_sftp()
+
+    def execute(self, command: str):
         stdin, stdout, stderr = self.client.exec_command(command)
-        print(stdout.readlines())
+        output = stdout.readlines()
+        if output:
+            output = [x.strip() for x in output]
+            return output
+        else:
+            return None
+
+    # Paramiko doesn't support recursive download, need to implement it manually
+    def download_folder(self, remote_dir, local_dir):
+        for entry in self.sftp_client.listdir_attr(remote_dir):
+            remote_path = os.path.join(remote_dir, entry.filename)
+            local_path = os.path.join(local_dir, entry.filename)
+            mode = entry.st_mode
+
+            if S_ISDIR(mode):
+                try:
+                    os.mkdir(local_path)
+                except OSError:
+                    pass
+                self.download_folder(remote_path, local_path)
+            elif S_ISREG(mode):
+                self.sftp_client.get(remote_path, local_path)
 
     def close(self):
+        self.sftp_client.close()
         self.client.close()
