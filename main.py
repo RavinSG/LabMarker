@@ -22,6 +22,8 @@ def main(cfg: Config):
         action = int(action)
         if action == 1:
             available_classes, lab_path = actions.lab_selection(local_all_labs_path=cfg.paths.local_labs_path)
+            actions.check_submission_time(available_classes=available_classes, lab_path=lab_path,
+                                          deadline=cfg.marking.deadline, assign=cfg.marking.assign)
         elif action == 2:
             pass
         elif action == 3:

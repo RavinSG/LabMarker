@@ -1,11 +1,11 @@
 import os
 import shutil
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from tqdm import tqdm
-from datetime import datetime
+from datetime import datetime, timedelta
 
+from config import bcolors, Deadline
 from connection.ssh import Client
-from config import bcolors
 
 
 def print_and_get_sub_selection(lab_names: List[str]) -> int:
@@ -46,6 +46,120 @@ def lab_selection(local_all_labs_path: str) -> Tuple[List[str], str]:
     lab_path = os.path.join(local_all_labs_path, avail_labs[lab_num])
 
     return avail_classes, lab_path
+
+
+def get_deadline_info(deadline: Deadline, assign=False) -> Tuple[datetime, List[timedelta], List[int]]:
+    current_deadline = datetime.strptime(deadline.cur, "%Y/%m/%d %H:%M:%S")
+    thresholds = deadline.thresholds
+
+    if assign:
+        penalties = deadline.assign_penalties
+    else:
+        penalties = deadline.lab_penalties
+
+    num_stages = len(penalties)
+    thresholds = [timedelta(minutes=x) for x in thresholds[:num_stages]]
+
+    return current_deadline, thresholds, penalties
+
+
+def calculate_late_penalty(delayed_time: timedelta, thresholds: List[timedelta], penalties: List[int]) -> int:
+    rejected = False
+    delay_penalty = None
+
+    for threshold, penalty in zip(thresholds, penalties):
+        if delayed_time <= threshold:
+            delay_penalty = penalty
+            break
+    else:
+        rejected = True
+
+    if rejected:
+        return -1
+    else:
+        return delay_penalty
+
+
+def check_submission_time(available_classes: List[str], lab_path: str, deadline: Deadline, assign=False,
+                          print_outputs=True) -> Dict[str, datetime]:
+    """
+    Takes the available classes and the lab path as the input and checks the time of the last submission for each
+    student. Opens the log file of each submission and reads the final line to get the last submitted time. Then
+    compares this value with the curr_deadline. If the deadline is exceeded, based on the delayed time calculates the
+    penalty.
+
+    :param available_classes: List of available classes for selected lab
+    :param lab_path: Absolute file path to the lab folder containing the classes
+    :param deadline: Deadline for the selected lab
+    :param assign: If ture, uses assignment deadline parameters
+    :param print_outputs: If true, the prompt and submission times will also be printed
+    :return: A dictionary containing student id as key and the final submission timestamp as the value
+    """
+
+    if print_outputs:
+        print(f"{bcolors.HEADER}Select lab to check curr_class times{bcolors.ENDC}")
+
+    current_deadline, thresholds, penalties = get_deadline_info(deadline=deadline, assign=assign)
+    student_num = 0
+    submission_times = {}
+
+    for curr_class in available_classes:
+        if curr_class.startswith("."):
+            continue
+
+        class_path = os.path.join(lab_path, curr_class)
+        student_dirs = os.listdir(class_path)
+        student_dirs.sort()
+        for file in student_dirs:
+            if file.startswith("."):
+                continue
+            try:
+                with open(os.path.join(class_path, file, "log")) as log_file:
+                    try:
+                        final_sub_details = log_file.readlines()[-1].strip()
+                        final_sub_time = final_sub_details.split("\t")[1].split(" ")
+                    except IndexError:
+                        print(f"{bcolors.OKBLUE}[{student_num}]{bcolors.FAIL} {curr_class} {file} "
+                              f"Log file cannot be read! {bcolors.ENDC}")
+                        continue
+                    # Take care of single digit dates
+                    if final_sub_time[2] == "":
+                        final_sub_time.pop(2)
+                        final_sub_time[2] = "0" + final_sub_time[2]
+
+                    final_sub_time = " ".join(final_sub_time[1:])
+
+                    final_sub_time = datetime.strptime(final_sub_time, "%b %d %H:%M:%S %Y")
+                    late_submission = current_deadline < final_sub_time
+
+                    if late_submission:
+                        spacing = 5
+                        delay_time = final_sub_time - current_deadline
+                        penalty = calculate_late_penalty(delayed_time=delay_time, thresholds=thresholds,
+                                                         penalties=penalties)
+                        if penalty == -1:
+                            penalty_str = 'rejected'
+                        else:
+                            penalty_str = f"-{str(penalty).zfill(2)}%"
+
+                        if print_outputs:
+                            print(
+                                f"{bcolors.OKBLUE}[{student_num}]{bcolors.ENDC} {bcolors.FAIL}{curr_class} {file} "
+                                f"Late Sub Penalty: {f'{penalty_str}'.ljust(spacing)} {delay_time}{bcolors.ENDC}")
+                    else:
+                        if print_outputs:
+                            print(f"{bcolors.OKBLUE}[{student_num}]{bcolors.ENDC}", curr_class, file)
+
+                    student_num += 1
+            except FileNotFoundError:
+                if print_outputs:
+                    print(f"{bcolors.OKBLUE}[{student_num}]{bcolors.WARNING} {curr_class} {file} "
+                          f"Log file not found! {bcolors.ENDC}")
+
+            submission_times[file] = final_sub_time
+
+    return submission_times
+
 
 def check_pre_download_conditions(destination_path: str, lab_name: str) -> bool:
     lab_path = os.path.join(destination_path, lab_name)

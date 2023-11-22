@@ -31,9 +31,19 @@ class Paths:
 
 
 @dataclass
+class Deadline:
+    cur: str
+    thresholds: List[int]
+    lab_penalties: List[int]
+    assign_penalties: List[int]
+
+
+@dataclass
 class Marking:
     term: str
     class_names: List[str]
+    assign: bool
+    deadline: Deadline
 
 
 @dataclass
