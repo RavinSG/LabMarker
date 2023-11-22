@@ -8,7 +8,7 @@ connection:
   use_pass: False
 paths:
   known_hosts: /Users/z5380598/.ssh/known_hosts
-  lab_save_path: /Users/z5380598/UNSW/Tutorial/cs3331/23T3
+  local_labs_path: /Users/z5380598/UNSW/Tutorial/cs3331/23T3
 marking:
   term: 23T3
   class_names: ["thu12-clavier", "thu14-clavier", "thu16-clavier"]

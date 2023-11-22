@@ -1,11 +1,51 @@
 import os
 import shutil
-from typing import List
+from typing import List, Tuple
 from tqdm import tqdm
+from datetime import datetime
 
 from connection.ssh import Client
 from config import bcolors
 
+
+def print_and_get_sub_selection(lab_names: List[str]) -> int:
+    lab_names.sort()
+
+    for i, lab in enumerate(lab_names):
+        if not lab.startswith("."):
+            print(f"{bcolors.OKBLUE}[{i}]{bcolors.ENDC}", lab)
+
+    while True:
+        lab_num = input("\nEnter lab number w/o brackets: ")
+
+        try:
+            lab_num = int(lab_num)
+        except ValueError:
+            print(f"{bcolors.FAIL}Please enter a valid number{bcolors.ENDC}")
+            continue
+
+        if lab_num >= len(lab_names) or lab_num < 0:
+            print(f"{bcolors.FAIL}Lab not found{bcolors.ENDC}")
+        else:
+            return lab_num
+
+
+def lab_selection(local_all_labs_path: str) -> Tuple[List[str], str]:
+    """
+    Lists down all available labs in the given path and prompts the user to pick a specific lab number.
+    If the input lab number is present, returns all class names under the given lab and their respective directory paths
+
+    :param local_all_labs_path: Path of the local save location of all labs
+    :return: The available class names (eg: 'fri09-oboe') in the lab and the path of the lab directory
+    """
+
+    avail_labs = os.listdir(local_all_labs_path)
+    lab_num = print_and_get_sub_selection(avail_labs)
+
+    avail_classes = os.listdir(os.path.join(local_all_labs_path, avail_labs[lab_num]))
+    lab_path = os.path.join(local_all_labs_path, avail_labs[lab_num])
+
+    return avail_classes, lab_path
 
 def check_pre_download_conditions(destination_path: str, lab_name: str) -> bool:
     lab_path = os.path.join(destination_path, lab_name)
@@ -85,6 +125,7 @@ def download_labs_all_classes(ssh_client: Client, term: str, lab_name: str, clas
         print(f"{bcolors.OKBLUE}Downloading {lab_name} for class: {bcolors.OKCYAN}{class_name}{bcolors.ENDC}")
         ssh_lab_path = f"/home/cs3331/{term}.work/{lab_name}/{class_name}/"
         avail_submissions = ssh_client.execute(f"ls {ssh_lab_path}")
+
         for submission in tqdm(avail_submissions):
             os.makedirs(os.path.join(save_path, class_name, submission), exist_ok=True)
             ssh_client.download_folder(remote_dir=os.path.join(ssh_lab_path, submission),
@@ -95,5 +136,6 @@ def call_download_labs(ssh_client: Client, term: str, dest_path: str, class_name
     list_labs = f"ls /home/cs3331/{term}.work"
     avail_labs = ssh_client.execute(list_labs)
     selected_lab = get_user_selection(avail_labs, "Labs")
+
     if check_pre_download_conditions(dest_path, selected_lab):
         download_labs_all_classes(ssh_client, term, selected_lab, class_names, os.path.join(dest_path, selected_lab))

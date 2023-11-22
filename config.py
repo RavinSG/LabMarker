@@ -27,7 +27,7 @@ class Connection:
 @dataclass
 class Paths:
     known_hosts: str
-    lab_save_path: str
+    local_labs_path: str
 
 
 @dataclass

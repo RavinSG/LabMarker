@@ -7,10 +7,8 @@ from config import Config, bcolors
 
 @hydra.main(config_path='.', config_name="config.yaml", version_base=None)
 def main(cfg: Config):
-    print(cfg.paths.lab_save_path)
-    client = Client(cfg)
-    client.execute("pwd")
-    client.execute("ls")
+    print(cfg.paths.local_labs_path)
+    client = None
 
     while True:
         action = input(
@@ -23,7 +21,7 @@ def main(cfg: Config):
             f"\n{bcolors.OKBLUE}Action: {bcolors.ENDC}")
         action = int(action)
         if action == 1:
-            pass
+            available_classes, lab_path = actions.lab_selection(local_all_labs_path=cfg.paths.local_labs_path)
         elif action == 2:
             pass
         elif action == 3:
@@ -31,13 +29,16 @@ def main(cfg: Config):
         elif action == 4:
             pass
         elif action == 5:
-            actions.call_download_labs(ssh_client=client, term=cfg.marking.term, dest_path=cfg.paths.lab_save_path,
+            if client is None:
+                client = Client(cfg)
+            actions.call_download_labs(ssh_client=client, term=cfg.marking.term, dest_path=cfg.paths.local_labs_path,
                                        class_names=cfg.marking.class_names)
         else:
             break
         print("\n\n")
 
-    client.close()
+    if client is not None:
+        client.close()
     return
 
 
