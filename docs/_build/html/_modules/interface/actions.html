@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>interface.actions &mdash; Lab Marker 0.1.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=87f11076"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Lab Marker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Lab Marker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">interface.actions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for interface.actions</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">bcolors</span><span class="p">,</span> <span class="n">Deadline</span>
+<span class="kn">from</span> <span class="nn">connection.ssh</span> <span class="kn">import</span> <span class="n">Client</span>
+
+
+<div class="viewcode-block" id="print_and_get_sub_selection"><a class="viewcode-back" href="../../interface.html#interface.actions.print_and_get_sub_selection">[docs]</a><span class="k">def</span> <span class="nf">print_and_get_sub_selection</span><span class="p">(</span><span class="n">lab_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print all the labs in the list to the terminal with the corresponding index. Then waits for the user input to select</span>
+<span class="sd">    a lab based on the index. Returns the selected lab index to the calling function. Performs basic input verification.</span>
+
+<span class="sd">    :param lab_names: A list of lab names as strings</span>
+<span class="sd">    :return: The index of the selected lab</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lab_names</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lab</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lab_names</span><span class="p">):</span>
+        <span class="c1"># Ignore folders that are hidden</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lab</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lab</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">lab_num</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Enter lab number w/o brackets: &quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">lab_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lab_num</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">Please enter a valid number</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">lab_num</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lab_names</span><span class="p">)</span> <span class="ow">or</span> <span class="n">lab_num</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">Lab not found</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lab_num</span></div>
+
+
+<div class="viewcode-block" id="lab_selection"><a class="viewcode-back" href="../../interface.html#interface.actions.lab_selection">[docs]</a><span class="k">def</span> <span class="nf">lab_selection</span><span class="p">(</span><span class="n">local_all_labs_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Lists down all available labs in the given path and prompts the user to pick a specific lab number.</span>
+<span class="sd">    If the input lab number is present, returns all class names under the given lab and their respective directory paths</span>
+
+<span class="sd">    :param local_all_labs_path: Path of the local save location of all labs</span>
+<span class="sd">    :return: The available class names (eg: &#39;fri09-oboe&#39;) in the lab and the path of the lab directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">avail_labs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">local_all_labs_path</span><span class="p">)</span>
+    <span class="n">lab_num</span> <span class="o">=</span> <span class="n">print_and_get_sub_selection</span><span class="p">(</span><span class="n">avail_labs</span><span class="p">)</span>
+
+    <span class="n">lab_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">local_all_labs_path</span><span class="p">,</span> <span class="n">avail_labs</span><span class="p">[</span><span class="n">lab_num</span><span class="p">])</span>
+    <span class="n">avail_classes</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">lab_path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">avail_classes</span><span class="p">,</span> <span class="n">lab_path</span></div>
+
+
+<div class="viewcode-block" id="get_deadline_info"><a class="viewcode-back" href="../../interface.html#interface.actions.get_deadline_info">[docs]</a><span class="k">def</span> <span class="nf">get_deadline_info</span><span class="p">(</span><span class="n">deadline</span><span class="p">:</span> <span class="n">Deadline</span><span class="p">,</span> <span class="n">assign</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">timedelta</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+    <span class="n">current_deadline</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">deadline</span><span class="o">.</span><span class="n">cur</span><span class="p">,</span> <span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">deadline</span><span class="o">.</span><span class="n">thresholds</span>
+
+    <span class="k">if</span> <span class="n">assign</span><span class="p">:</span>
+        <span class="n">penalties</span> <span class="o">=</span> <span class="n">deadline</span><span class="o">.</span><span class="n">assign_penalties</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">penalties</span> <span class="o">=</span> <span class="n">deadline</span><span class="o">.</span><span class="n">lab_penalties</span>
+
+    <span class="n">num_stages</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">penalties</span><span class="p">)</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="p">[</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="p">[:</span><span class="n">num_stages</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">current_deadline</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">penalties</span></div>
+
+
+<div class="viewcode-block" id="calculate_late_penalty"><a class="viewcode-back" href="../../interface.html#interface.actions.calculate_late_penalty">[docs]</a><span class="k">def</span> <span class="nf">calculate_late_penalty</span><span class="p">(</span><span class="n">delayed_time</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">timedelta</span><span class="p">],</span> <span class="n">penalties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the late submission penalty that should be added to a student based on how delayed the submission is.</span>
+<span class="sd">    The number of late submission brackets is decided by taking the minimum number of elements available in two lists,</span>
+<span class="sd">    thresholds and penalties.</span>
+
+<span class="sd">    :param delayed_time: How late the submission is from the deadline</span>
+<span class="sd">    :param thresholds: A list containing threshold values for each late submission bracket</span>
+<span class="sd">    :param penalties: A list of penalties for each bracket</span>
+<span class="sd">    :return: The submission penalty as an integer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rejected</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">delay_penalty</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">penalty</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">penalties</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">delayed_time</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">:</span>
+            <span class="n">delay_penalty</span> <span class="o">=</span> <span class="n">penalty</span>
+            <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rejected</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># If the delayed_time is not less than any of the brackets, the submission is rejected</span>
+
+    <span class="k">if</span> <span class="n">rejected</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">delay_penalty</span></div>
+
+
+<div class="viewcode-block" id="check_submission_time"><a class="viewcode-back" href="../../interface.html#interface.actions.check_submission_time">[docs]</a><span class="k">def</span> <span class="nf">check_submission_time</span><span class="p">(</span><span class="n">available_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">lab_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">deadline</span><span class="p">:</span> <span class="n">Deadline</span><span class="p">,</span> <span class="n">assign</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">print_outputs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes the available classes and the lab path as the input and checks the time of the last submission for each</span>
+<span class="sd">    student. Opens the log file of each submission and reads the final line to get the last submitted time. Then</span>
+<span class="sd">    compares this value with the curr_deadline. If the deadline is exceeded, based on the delayed time calculates the</span>
+<span class="sd">    penalty.</span>
+
+<span class="sd">    :param available_classes: List of available classes for selected lab</span>
+<span class="sd">    :param lab_path: Absolute file path to the lab folder containing the classes</span>
+<span class="sd">    :param deadline: Deadline for the selected lab</span>
+<span class="sd">    :param assign: If ture, uses assignment deadline parameters</span>
+<span class="sd">    :param print_outputs: If true, the prompt and submission times will also be printed</span>
+<span class="sd">    :return: A dictionary containing student id as key and the final submission timestamp as the value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">print_outputs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">HEADER</span><span class="si">}</span><span class="s2">Select lab to check curr_class times</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Extract current deadline information from the config file</span>
+    <span class="n">current_deadline</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">penalties</span> <span class="o">=</span> <span class="n">get_deadline_info</span><span class="p">(</span><span class="n">deadline</span><span class="o">=</span><span class="n">deadline</span><span class="p">,</span> <span class="n">assign</span><span class="o">=</span><span class="n">assign</span><span class="p">)</span>
+    <span class="n">student_num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">submission_times</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">curr_class</span> <span class="ow">in</span> <span class="n">available_classes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">curr_class</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">class_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lab_path</span><span class="p">,</span> <span class="n">curr_class</span><span class="p">)</span>
+        <span class="n">student_dirs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">class_path</span><span class="p">)</span>
+        <span class="n">student_dirs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">student_dirs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">class_path</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">log_file</span><span class="p">:</span>
+                    <span class="c1"># Pad the index number with 0&#39;s to make it two digits for formatting purposes</span>
+                    <span class="n">student_num_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">student_num</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">final_sub_details</span> <span class="o">=</span> <span class="n">log_file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                        <span class="n">final_sub_time</span> <span class="o">=</span> <span class="n">final_sub_details</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+                    <span class="c1"># If the log file could not be open, the empty list will raise an IndexError</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">student_num_str</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">curr_class</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;Log file cannot be read! </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">continue</span>
+
+                    <span class="c1"># Take care of single digit dates. In the log file there is an additional &#39;\t&#39; character between the</span>
+                    <span class="c1"># month and the day if the day is a single digit. eg: Oct \t 10 vs Oct \t\t 2. This get rids of the</span>
+                    <span class="c1"># additional &#39;\t&#39; and pads the day with a 0</span>
+                    <span class="k">if</span> <span class="n">final_sub_time</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                        <span class="n">final_sub_time</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                        <span class="n">final_sub_time</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="o">+</span> <span class="n">final_sub_time</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+                    <span class="n">final_sub_time</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">final_sub_time</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+                    <span class="n">final_sub_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">final_sub_time</span><span class="p">,</span> <span class="s2">&quot;%b </span><span class="si">%d</span><span class="s2"> %H:%M:%S %Y&quot;</span><span class="p">)</span>
+                    <span class="n">late_submission</span> <span class="o">=</span> <span class="n">current_deadline</span> <span class="o">&lt;</span> <span class="n">final_sub_time</span>
+
+                    <span class="k">if</span> <span class="n">late_submission</span><span class="p">:</span>
+                        <span class="n">spacing</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Defined for formatting purposes</span>
+                        <span class="n">delay_time</span> <span class="o">=</span> <span class="n">final_sub_time</span> <span class="o">-</span> <span class="n">current_deadline</span>
+                        <span class="n">penalty</span> <span class="o">=</span> <span class="n">calculate_late_penalty</span><span class="p">(</span><span class="n">delayed_time</span><span class="o">=</span><span class="n">delay_time</span><span class="p">,</span> <span class="n">thresholds</span><span class="o">=</span><span class="n">thresholds</span><span class="p">,</span>
+                                                         <span class="n">penalties</span><span class="o">=</span><span class="n">penalties</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">penalty</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                            <span class="n">penalty_str</span> <span class="o">=</span> <span class="s1">&#39;rejected&#39;</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">penalty_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">penalty</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">%&quot;</span>
+
+                        <span class="k">if</span> <span class="n">print_outputs</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">student_num_str</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">curr_class</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;Late Sub Penalty: </span><span class="si">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">penalty_str</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">spacing</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">delay_time</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">print_outputs</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">student_num_str</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">curr_class</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+
+                    <span class="n">student_num</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">print_outputs</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">student_num_str</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">WARNING</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">curr_class</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;Log file not found! </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Store the final submission times in a dict with the string zID of each student as the key</span>
+            <span class="n">submission_times</span><span class="p">[</span><span class="n">file</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_sub_time</span>
+
+    <span class="k">return</span> <span class="n">submission_times</span></div>
+
+
+<div class="viewcode-block" id="check_pre_download_conditions"><a class="viewcode-back" href="../../interface.html#interface.actions.check_pre_download_conditions">[docs]</a><span class="k">def</span> <span class="nf">check_pre_download_conditions</span><span class="p">(</span><span class="n">destination_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lab_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">lab_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">destination_path</span><span class="p">,</span> <span class="n">lab_name</span><span class="p">)</span>
+    <span class="n">lab_dir_exists</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">lab_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lab_dir_exists</span><span class="p">:</span>
+        <span class="n">overwrite</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is a </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">WARNING</span><span class="si">}{</span><span class="n">lab_name</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2"> directory available. &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">Do you wish to overwrite its content? y/[n]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">: &quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">overwrite</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">continue_download</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Do you wish to continue the download process? This will move all existing &quot;</span>
+                                      <span class="sa">f</span><span class="s2">&quot;directories inside </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">WARNING</span><span class="si">}{</span><span class="n">lab_name</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2"> to a hidden &quot;</span>
+                                      <span class="sa">f</span><span class="s2">&quot;directory before downloading the files. </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">y/[n]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">: &quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">continue_download</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+                <span class="n">existing_dirs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">lab_path</span><span class="p">)</span>
+                <span class="n">to_be_moved_dirs</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">num_runs</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">existing_dirs</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">directory</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.lastrun&quot;</span><span class="p">):</span>
+                        <span class="n">num_runs</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">to_be_moved_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+
+                <span class="n">lastrun_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lab_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;.lastrun_</span><span class="si">{</span><span class="n">num_runs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">lastrun_path</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">to_be_moved_dirs</span><span class="p">:</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lab_path</span><span class="p">,</span> <span class="n">directory</span><span class="p">),</span> <span class="n">lastrun_path</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">Downloading </span><span class="si">{</span><span class="n">lab_name</span><span class="si">}</span><span class="s2"> Aborted!</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">lab_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="get_user_selection"><a class="viewcode-back" href="../../interface.html#interface.actions.get_user_selection">[docs]</a><span class="k">def</span> <span class="nf">get_user_selection</span><span class="p">(</span><span class="n">available_options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">selection_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Labs&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a list of lab names, print them to the console in a user-friendly format and waits for the user to make a</span>
+<span class="sd">    selection. The selection is validated against non-integer and out of range inputs.</span>
+
+<span class="sd">    :param selection_type:</span>
+<span class="sd">    :param available_options: A list of labs</span>
+<span class="sd">    :return: Name on the user selected lab</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">singular</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Labs&quot;</span><span class="p">:</span> <span class="s2">&quot;Lab&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Classes&quot;</span><span class="p">:</span> <span class="s2">&quot;Class&quot;</span>
+    <span class="p">}</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKCYAN</span><span class="si">}</span><span class="s2">Available </span><span class="si">{</span><span class="n">selection_type</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lab</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">available_options</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lab</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">selected_option</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKGREEN</span><span class="si">}</span><span class="se">\n</span><span class="s2">Select your </span><span class="si">{</span><span class="n">singular</span><span class="p">[</span><span class="n">selection_type</span><span class="p">]</span><span class="si">}</span><span class="s2"> w/o brackets: </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">selected_option</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">selected_option</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">Please enter a valid number</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">selected_option</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">available_options</span><span class="p">)</span> <span class="ow">or</span> <span class="n">selected_option</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">singular</span><span class="p">[</span><span class="n">selection_type</span><span class="p">]</span><span class="si">}</span><span class="s2"> not found</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">available_options</span><span class="p">[</span><span class="n">selected_option</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="download_labs_all_classes"><a class="viewcode-back" href="../../interface.html#interface.actions.download_labs_all_classes">[docs]</a><span class="k">def</span> <span class="nf">download_labs_all_classes</span><span class="p">(</span><span class="n">ssh_client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">term</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lab_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">class_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">class_names</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">Downloading </span><span class="si">{</span><span class="n">lab_name</span><span class="si">}</span><span class="s2"> for class: </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKCYAN</span><span class="si">}{</span><span class="n">class_name</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ssh_lab_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/home/cs3331/</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">.work/</span><span class="si">{</span><span class="n">lab_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">/&quot;</span>
+        <span class="n">avail_submissions</span> <span class="o">=</span> <span class="n">ssh_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ls </span><span class="si">{</span><span class="n">ssh_lab_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">submission</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">avail_submissions</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">submission</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">ssh_client</span><span class="o">.</span><span class="n">download_folder</span><span class="p">(</span><span class="n">remote_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ssh_lab_path</span><span class="p">,</span> <span class="n">submission</span><span class="p">),</span>
+                                       <span class="n">local_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">submission</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="call_download_labs"><a class="viewcode-back" href="../../interface.html#interface.actions.call_download_labs">[docs]</a><span class="k">def</span> <span class="nf">call_download_labs</span><span class="p">(</span><span class="n">ssh_client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">term</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">class_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    :param ssh_client:</span>
+<span class="sd">    :param term:</span>
+<span class="sd">    :param dest_path:</span>
+<span class="sd">    :param class_names:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">list_labs</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ls /home/cs3331/</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">.work&quot;</span>
+    <span class="n">avail_labs</span> <span class="o">=</span> <span class="n">ssh_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">list_labs</span><span class="p">)</span>
+    <span class="n">selected_lab</span> <span class="o">=</span> <span class="n">get_user_selection</span><span class="p">(</span><span class="n">avail_labs</span><span class="p">,</span> <span class="s2">&quot;Labs&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">check_pre_download_conditions</span><span class="p">(</span><span class="n">dest_path</span><span class="p">,</span> <span class="n">selected_lab</span><span class="p">):</span>
+        <span class="n">download_labs_all_classes</span><span class="p">(</span><span class="n">ssh_client</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">selected_lab</span><span class="p">,</span> <span class="n">class_names</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest_path</span><span class="p">,</span> <span class="n">selected_lab</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ravin Gunawardena.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>interface package &mdash; Lab Marker 0.1.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=87f11076"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Lab Marker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">interface package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-interface.actions">interface.actions module</a><ul>
+<li><a class="reference internal" href="#interface.actions.calculate_late_penalty"><code class="docutils literal notranslate"><span class="pre">calculate_late_penalty()</span></code></a></li>
+<li><a class="reference internal" href="#interface.actions.call_download_labs"><code class="docutils literal notranslate"><span class="pre">call_download_labs()</span></code></a></li>
+<li><a class="reference internal" href="#interface.actions.check_pre_download_conditions"><code class="docutils literal notranslate"><span class="pre">check_pre_download_conditions()</span></code></a></li>
+<li><a class="reference internal" href="#interface.actions.check_submission_time"><code class="docutils literal notranslate"><span class="pre">check_submission_time()</span></code></a></li>
+<li><a class="reference internal" href="#interface.actions.download_labs_all_classes"><code class="docutils literal notranslate"><span class="pre">download_labs_all_classes()</span></code></a></li>
+<li><a class="reference internal" href="#interface.actions.get_deadline_info"><code class="docutils literal notranslate"><span class="pre">get_deadline_info()</span></code></a></li>
+<li><a class="reference internal" href="#interface.actions.get_user_selection"><code class="docutils literal notranslate"><span class="pre">get_user_selection()</span></code></a></li>
+<li><a class="reference internal" href="#interface.actions.lab_selection"><code class="docutils literal notranslate"><span class="pre">lab_selection()</span></code></a></li>
+<li><a class="reference internal" href="#interface.actions.print_and_get_sub_selection"><code class="docutils literal notranslate"><span class="pre">print_and_get_sub_selection()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-interface">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lab Marker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">interface package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/interface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="interface-package">
+<h1>interface package<a class="headerlink" href="#interface-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-interface.actions">
+<span id="interface-actions-module"></span><h2>interface.actions module<a class="headerlink" href="#module-interface.actions" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="interface.actions.calculate_late_penalty">
+<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">calculate_late_penalty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delayed_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">timedelta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresholds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">timedelta</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/interface/actions.html#calculate_late_penalty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.calculate_late_penalty" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the late submission penalty that should be added to a student based on how delayed the submission is.
+The number of late submission brackets is decided by taking the minimum number of elements available in two lists,
+thresholds and penalties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delayed_time</strong> – How late the submission is from the deadline</p></li>
+<li><p><strong>thresholds</strong> – A list containing threshold values for each late submission bracket</p></li>
+<li><p><strong>penalties</strong> – A list of penalties for each bracket</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The submission penalty as an integer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="interface.actions.call_download_labs">
+<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">call_download_labs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssh_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection.html#connection.ssh.Client" title="connection.ssh.Client"><span class="pre">Client</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/interface/actions.html#call_download_labs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.call_download_labs" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ssh_client</strong> – </p></li>
+<li><p><strong>term</strong> – </p></li>
+<li><p><strong>dest_path</strong> – </p></li>
+<li><p><strong>class_names</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="interface.actions.check_pre_download_conditions">
+<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">check_pre_download_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/interface/actions.html#check_pre_download_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.check_pre_download_conditions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="interface.actions.check_submission_time">
+<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">check_submission_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">available_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="config.html#config.Deadline" title="config.Deadline"><span class="pre">Deadline</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/interface/actions.html#check_submission_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.check_submission_time" title="Permalink to this definition"></a></dt>
+<dd><p>Takes the available classes and the lab path as the input and checks the time of the last submission for each
+student. Opens the log file of each submission and reads the final line to get the last submitted time. Then
+compares this value with the curr_deadline. If the deadline is exceeded, based on the delayed time calculates the
+penalty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>available_classes</strong> – List of available classes for selected lab</p></li>
+<li><p><strong>lab_path</strong> – Absolute file path to the lab folder containing the classes</p></li>
+<li><p><strong>deadline</strong> – Deadline for the selected lab</p></li>
+<li><p><strong>assign</strong> – If ture, uses assignment deadline parameters</p></li>
+<li><p><strong>print_outputs</strong> – If true, the prompt and submission times will also be printed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing student id as key and the final submission timestamp as the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="interface.actions.download_labs_all_classes">
+<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">download_labs_all_classes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssh_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection.html#connection.ssh.Client" title="connection.ssh.Client"><span class="pre">Client</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interface/actions.html#download_labs_all_classes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.download_labs_all_classes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="interface.actions.get_deadline_info">
+<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">get_deadline_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="config.html#config.Deadline" title="config.Deadline"><span class="pre">Deadline</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">timedelta</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/interface/actions.html#get_deadline_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.get_deadline_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="interface.actions.get_user_selection">
+<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">get_user_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">available_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selection_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Labs'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/interface/actions.html#get_user_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.get_user_selection" title="Permalink to this definition"></a></dt>
+<dd><p>Given a list of lab names, print them to the console in a user-friendly format and waits for the user to make a
+selection. The selection is validated against non-integer and out of range inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selection_type</strong> – </p></li>
+<li><p><strong>available_options</strong> – A list of labs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Name on the user selected lab</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="interface.actions.lab_selection">
+<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">lab_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_all_labs_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/interface/actions.html#lab_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.lab_selection" title="Permalink to this definition"></a></dt>
+<dd><p>Lists down all available labs in the given path and prompts the user to pick a specific lab number.
+If the input lab number is present, returns all class names under the given lab and their respective directory paths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>local_all_labs_path</strong> – Path of the local save location of all labs</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The available class names (eg: ‘fri09-oboe’) in the lab and the path of the lab directory</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="interface.actions.print_and_get_sub_selection">
+<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">print_and_get_sub_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/interface/actions.html#print_and_get_sub_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.print_and_get_sub_selection" title="Permalink to this definition"></a></dt>
+<dd><p>Print all the labs in the list to the terminal with the corresponding index. Then waits for the user input to select
+a lab based on the index. Returns the selected lab index to the calling function. Performs basic input verification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lab_names</strong> – A list of lab names as strings</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The index of the selected lab</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-interface">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-interface" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ravin Gunawardena.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

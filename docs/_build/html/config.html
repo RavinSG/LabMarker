@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>config module &mdash; Lab Marker 0.1.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=87f11076"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Lab Marker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">config module</a><ul>
+<li><a class="reference internal" href="#config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a><ul>
+<li><a class="reference internal" href="#config.Config.connection"><code class="docutils literal notranslate"><span class="pre">Config.connection</span></code></a></li>
+<li><a class="reference internal" href="#config.Config.marking"><code class="docutils literal notranslate"><span class="pre">Config.marking</span></code></a></li>
+<li><a class="reference internal" href="#config.Config.paths"><code class="docutils literal notranslate"><span class="pre">Config.paths</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#config.Connection"><code class="docutils literal notranslate"><span class="pre">Connection</span></code></a><ul>
+<li><a class="reference internal" href="#config.Connection.host_name"><code class="docutils literal notranslate"><span class="pre">Connection.host_name</span></code></a></li>
+<li><a class="reference internal" href="#config.Connection.private_key"><code class="docutils literal notranslate"><span class="pre">Connection.private_key</span></code></a></li>
+<li><a class="reference internal" href="#config.Connection.use_pass"><code class="docutils literal notranslate"><span class="pre">Connection.use_pass</span></code></a></li>
+<li><a class="reference internal" href="#config.Connection.username"><code class="docutils literal notranslate"><span class="pre">Connection.username</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#config.Deadline"><code class="docutils literal notranslate"><span class="pre">Deadline</span></code></a><ul>
+<li><a class="reference internal" href="#config.Deadline.assign_penalties"><code class="docutils literal notranslate"><span class="pre">Deadline.assign_penalties</span></code></a></li>
+<li><a class="reference internal" href="#config.Deadline.cur"><code class="docutils literal notranslate"><span class="pre">Deadline.cur</span></code></a></li>
+<li><a class="reference internal" href="#config.Deadline.lab_penalties"><code class="docutils literal notranslate"><span class="pre">Deadline.lab_penalties</span></code></a></li>
+<li><a class="reference internal" href="#config.Deadline.thresholds"><code class="docutils literal notranslate"><span class="pre">Deadline.thresholds</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#config.Marking"><code class="docutils literal notranslate"><span class="pre">Marking</span></code></a><ul>
+<li><a class="reference internal" href="#config.Marking.assign"><code class="docutils literal notranslate"><span class="pre">Marking.assign</span></code></a></li>
+<li><a class="reference internal" href="#config.Marking.class_names"><code class="docutils literal notranslate"><span class="pre">Marking.class_names</span></code></a></li>
+<li><a class="reference internal" href="#config.Marking.deadline"><code class="docutils literal notranslate"><span class="pre">Marking.deadline</span></code></a></li>
+<li><a class="reference internal" href="#config.Marking.term"><code class="docutils literal notranslate"><span class="pre">Marking.term</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#config.Paths"><code class="docutils literal notranslate"><span class="pre">Paths</span></code></a><ul>
+<li><a class="reference internal" href="#config.Paths.known_hosts"><code class="docutils literal notranslate"><span class="pre">Paths.known_hosts</span></code></a></li>
+<li><a class="reference internal" href="#config.Paths.local_labs_path"><code class="docutils literal notranslate"><span class="pre">Paths.local_labs_path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#config.bcolors"><code class="docutils literal notranslate"><span class="pre">bcolors</span></code></a><ul>
+<li><a class="reference internal" href="#config.bcolors.BOLD"><code class="docutils literal notranslate"><span class="pre">bcolors.BOLD</span></code></a></li>
+<li><a class="reference internal" href="#config.bcolors.ENDC"><code class="docutils literal notranslate"><span class="pre">bcolors.ENDC</span></code></a></li>
+<li><a class="reference internal" href="#config.bcolors.FAIL"><code class="docutils literal notranslate"><span class="pre">bcolors.FAIL</span></code></a></li>
+<li><a class="reference internal" href="#config.bcolors.HEADER"><code class="docutils literal notranslate"><span class="pre">bcolors.HEADER</span></code></a></li>
+<li><a class="reference internal" href="#config.bcolors.OKBLUE"><code class="docutils literal notranslate"><span class="pre">bcolors.OKBLUE</span></code></a></li>
+<li><a class="reference internal" href="#config.bcolors.OKCYAN"><code class="docutils literal notranslate"><span class="pre">bcolors.OKCYAN</span></code></a></li>
+<li><a class="reference internal" href="#config.bcolors.OKGREEN"><code class="docutils literal notranslate"><span class="pre">bcolors.OKGREEN</span></code></a></li>
+<li><a class="reference internal" href="#config.bcolors.UNDERLINE"><code class="docutils literal notranslate"><span class="pre">bcolors.UNDERLINE</span></code></a></li>
+<li><a class="reference internal" href="#config.bcolors.WARNING"><code class="docutils literal notranslate"><span class="pre">bcolors.WARNING</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lab Marker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">config module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-config">
+<span id="config-module"></span><h1>config module<a class="headerlink" href="#module-config" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="config.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#config.Connection" title="config.Connection"><span class="pre">config.Connection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#config.Paths" title="config.Paths"><span class="pre">config.Paths</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">marking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#config.Marking" title="config.Marking"><span class="pre">config.Marking</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Config.connection">
+<span class="sig-name descname"><span class="pre">connection</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#config.Connection" title="config.Connection"><span class="pre">Connection</span></a></em><a class="headerlink" href="#config.Config.connection" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Config.marking">
+<span class="sig-name descname"><span class="pre">marking</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#config.Marking" title="config.Marking"><span class="pre">Marking</span></a></em><a class="headerlink" href="#config.Config.marking" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Config.paths">
+<span class="sig-name descname"><span class="pre">paths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#config.Paths" title="config.Paths"><span class="pre">Paths</span></a></em><a class="headerlink" href="#config.Config.paths" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="config.Connection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">Connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">private_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_pass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#Connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.Connection" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Connection.host_name">
+<span class="sig-name descname"><span class="pre">host_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Connection.host_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Connection.private_key">
+<span class="sig-name descname"><span class="pre">private_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Connection.private_key" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Connection.use_pass">
+<span class="sig-name descname"><span class="pre">use_pass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#config.Connection.use_pass" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Connection.username">
+<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Connection.username" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="config.Deadline">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">Deadline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresholds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_penalties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign_penalties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#Deadline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.Deadline" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Deadline.assign_penalties">
+<span class="sig-name descname"><span class="pre">assign_penalties</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#config.Deadline.assign_penalties" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Deadline.cur">
+<span class="sig-name descname"><span class="pre">cur</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Deadline.cur" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Deadline.lab_penalties">
+<span class="sig-name descname"><span class="pre">lab_penalties</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#config.Deadline.lab_penalties" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Deadline.thresholds">
+<span class="sig-name descname"><span class="pre">thresholds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#config.Deadline.thresholds" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="config.Marking">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">Marking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#config.Deadline" title="config.Deadline"><span class="pre">config.Deadline</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#Marking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.Marking" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Marking.assign">
+<span class="sig-name descname"><span class="pre">assign</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#config.Marking.assign" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Marking.class_names">
+<span class="sig-name descname"><span class="pre">class_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#config.Marking.class_names" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Marking.deadline">
+<span class="sig-name descname"><span class="pre">deadline</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#config.Deadline" title="config.Deadline"><span class="pre">Deadline</span></a></em><a class="headerlink" href="#config.Marking.deadline" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Marking.term">
+<span class="sig-name descname"><span class="pre">term</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Marking.term" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="config.Paths">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">Paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">known_hosts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_labs_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#Paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.Paths" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Paths.known_hosts">
+<span class="sig-name descname"><span class="pre">known_hosts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Paths.known_hosts" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Paths.local_labs_path">
+<span class="sig-name descname"><span class="pre">local_labs_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Paths.local_labs_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="config.bcolors">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">bcolors</span></span><a class="reference internal" href="_modules/config.html#bcolors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.bcolors" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.bcolors.BOLD">
+<span class="sig-name descname"><span class="pre">BOLD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[1m'</span></em><a class="headerlink" href="#config.bcolors.BOLD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.bcolors.ENDC">
+<span class="sig-name descname"><span class="pre">ENDC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[0m'</span></em><a class="headerlink" href="#config.bcolors.ENDC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.bcolors.FAIL">
+<span class="sig-name descname"><span class="pre">FAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[91m'</span></em><a class="headerlink" href="#config.bcolors.FAIL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.bcolors.HEADER">
+<span class="sig-name descname"><span class="pre">HEADER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[95m'</span></em><a class="headerlink" href="#config.bcolors.HEADER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.bcolors.OKBLUE">
+<span class="sig-name descname"><span class="pre">OKBLUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[94m'</span></em><a class="headerlink" href="#config.bcolors.OKBLUE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.bcolors.OKCYAN">
+<span class="sig-name descname"><span class="pre">OKCYAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[96m'</span></em><a class="headerlink" href="#config.bcolors.OKCYAN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.bcolors.OKGREEN">
+<span class="sig-name descname"><span class="pre">OKGREEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[92m'</span></em><a class="headerlink" href="#config.bcolors.OKGREEN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.bcolors.UNDERLINE">
+<span class="sig-name descname"><span class="pre">UNDERLINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[4m'</span></em><a class="headerlink" href="#config.bcolors.UNDERLINE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.bcolors.WARNING">
+<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[93m'</span></em><a class="headerlink" href="#config.bcolors.WARNING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ravin Gunawardena.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
