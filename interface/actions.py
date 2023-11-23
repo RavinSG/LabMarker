@@ -2,10 +2,12 @@ import os
 import re
 import shutil
 import tarfile
+import subprocess
 
 from tqdm import tqdm
 from typing import List, Tuple, Dict
 from datetime import datetime, timedelta
+from collections import defaultdict
 
 from config import bcolors, Deadline
 from connection.ssh import Client
@@ -116,6 +118,24 @@ def calculate_late_penalty(delayed_time: timedelta, thresholds: List[timedelta],
         return delay_penalty
 
 
+def parse_time_from_log(log_path):
+    with open(log_path) as log_file:
+        final_sub_details = log_file.readlines()[-1].strip()
+        final_sub_time = final_sub_details.split("\t")[1].split(" ")
+
+        # Take care of single digit dates. In the log file there is an additional '\t' character
+        # between the month and the day if the day is a single digit. eg: Oct \t 10 vs Oct \t\t 2. This
+        # get rids of the additional '\t' and pads the day with a 0
+        if final_sub_time[2] == "":
+            final_sub_time.pop(2)
+            final_sub_time[2] = "0" + final_sub_time[2]
+
+        final_sub_time = " ".join(final_sub_time[1:])
+        final_sub_time = datetime.strptime(final_sub_time, "%b %d %H:%M:%S %Y")
+
+        return final_sub_time
+
+
 def get_submission_times(available_classes: List[str], lab_path: str, print_outputs: bool = True):
     submission_times = {}
     errors = {}
@@ -132,25 +152,11 @@ def get_submission_times(available_classes: List[str], lab_path: str, print_outp
             if student_dir.startswith("."):
                 continue
             try:
-                with open(os.path.join(class_path, student_dir, "log")) as log_file:
-                    try:
-                        final_sub_details = log_file.readlines()[-1].strip()
-                        final_sub_time = final_sub_details.split("\t")[1].split(" ")
+                log_path = os.path.join(class_path, student_dir, "log")
+                submission_times[student_dir] = parse_time_from_log(log_path)
 
-                        # Take care of single digit dates. In the log file there is an additional '\t' character
-                        # between the month and the day if the day is a single digit. eg: Oct \t 10 vs Oct \t\t 2. This
-                        # get rids of the additional '\t' and pads the day with a 0
-                        if final_sub_time[2] == "":
-                            final_sub_time.pop(2)
-                            final_sub_time[2] = "0" + final_sub_time[2]
-
-                        final_sub_time = " ".join(final_sub_time[1:])
-                        final_sub_time = datetime.strptime(final_sub_time, "%b %d %H:%M:%S %Y")
-                        submission_times[student_dir] = final_sub_time
-
-                    # If the log file could not be open, the empty list will raise an IndexError
-                    except IndexError:
-                        errors[student_dir] = "IndexError"
+            except IndexError:
+                errors[student_dir] = "IndexError"
 
             except FileNotFoundError:
                 if print_outputs:
@@ -159,7 +165,7 @@ def get_submission_times(available_classes: List[str], lab_path: str, print_outp
     return submission_times, errors
 
 
-def check_submission_time(available_classes: List[str], lab_path: str, deadline: Deadline,
+def check_late_submission(available_classes: List[str], lab_path: str, deadline: Deadline,
                           assign=False) -> Dict[str, datetime]:
     """
     Takes the available classes and the lab path as the input and checks the time of the last submission for each
@@ -428,3 +434,58 @@ def remove_extracted(lab_path: str) -> None:
                             shutil.rmtree(delete_path)
                         else:
                             os.remove(delete_path)
+
+
+def get_latest_submission_times(ssh_client: Client, term, classes, l_labs_path):
+    r_all_lab_path = f"/home/cs3331/{term}.work"
+    r_avail_labs = ssh_client.execute(f"ls {r_all_lab_path}")
+
+    selected_lab = get_user_selection(r_avail_labs)
+    r_lab_path = os.path.join(r_all_lab_path, selected_lab)
+
+    r_log_paths = []
+    for selected_class in classes:
+        find_str = f"find {r_lab_path}/{selected_class} -type f -name log"
+        r_class_log_paths = ssh_client.execute(find_str)
+        if r_class_log_paths:
+            r_log_paths += r_class_log_paths
+
+    if os.path.exists(".temp"):
+        shutil.rmtree(".temp")
+    os.makedirs(".temp")
+
+    student_to_class = {}
+    for r_log_path in r_log_paths:
+        class_name, student_id = r_log_path.split("/")[-3:-1]
+        ssh_client.download_file(r_log_path, f".temp/{student_id}")
+        student_to_class[student_id] = class_name
+
+    new_sub_time = {}
+    for log_file in os.listdir(".temp"):
+        last_sub_time = parse_time_from_log(os.path.join(".temp", log_file))
+        new_sub_time[log_file] = last_sub_time
+
+    l_selected_lab_path = os.path.join(l_labs_path, selected_lab)
+    find_str = f"find {l_selected_lab_path} -type f -name log"
+
+    output = subprocess.check_output(find_str.split(" "))
+    l_log_paths = output.decode().strip().split("\n")
+
+    old_sub_times = {}
+    for l_log_path in l_log_paths:
+        student_id = l_log_path.split("/")[-2]
+        old_sub_time = parse_time_from_log(l_log_path)
+
+        old_sub_times[student_id] = old_sub_time
+
+    updated_submissions = defaultdict(list)
+    for submission in new_sub_time:
+        if submission not in old_sub_times:
+            record = {"zID": submission, "desc": "Found New Submission", "time": new_sub_time[submission]}
+            updated_submissions[student_to_class[submission]].append(record)
+
+        elif old_sub_times[submission] < new_sub_time[submission]:
+            record = {"zID": submission, "desc": "Updated Submission", "time": new_sub_time[submission]}
+            updated_submissions[student_to_class[submission]].append(record)
+
+    print(updated_submissions)

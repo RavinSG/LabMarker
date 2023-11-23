@@ -62,6 +62,9 @@ class Client:
         else:
             return None
 
+    def download_file(self, remote_file, local_dest):
+        self.sftp_client.get(remote_file, local_dest)
+
     # Paramiko doesn't support recursive download, need to implement it manually
     def download_folder(self, remote_dir, local_dir):
         for entry in self.sftp_client.listdir_attr(remote_dir):

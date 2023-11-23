@@ -1,3 +1,4 @@
 .idea
+.temp
 main.log
 */__init__.py
