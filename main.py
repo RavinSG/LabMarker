@@ -32,7 +32,9 @@ def main(cfg: Config):
             actions.extract_all_submissions(extract_lab_path)
 
         elif action == 4:
-            pass
+            _, lab_path_to_clear = actions.lab_selection(local_all_labs_path=cfg.paths.local_labs_path)
+            actions.remove_extracted(lab_path_to_clear)
+
         elif action == 5:
             if client is None:
                 client = Client(cfg)
