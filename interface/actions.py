@@ -1,7 +1,9 @@
 import os
 import shutil
-from typing import List, Tuple, Dict
+import tarfile
+
 from tqdm import tqdm
+from typing import List, Tuple, Dict
 from datetime import datetime, timedelta
 
 from config import bcolors, Deadline
@@ -61,7 +63,8 @@ def get_deadline_info(deadline: Deadline, assign=False) -> Tuple[datetime, List[
     """
     Extract the current deadline, thresholds, and penalty values from the config file. The thresholds and penalties
     lists can have different number of elements. In such a case the minimum number of elements of both is selected.
-    eg: Threshold: [30, 1440, 2880, 4320, 5760]
+    eg:
+        Threshold: [30, 1440, 2880, 4320, 5760]
         Penalties: [0, 5, 10]
     Then the code will consider as there are only 3 penalty brackets.
 
@@ -327,3 +330,84 @@ def call_download_labs(ssh_client: Client, term: str, dest_path: str, class_name
 
     if check_pre_download_conditions(dest_path, selected_lab):
         download_labs_all_classes(ssh_client, term, selected_lab, class_names, os.path.join(dest_path, selected_lab))
+
+
+def extract_all(tar_file_path: str, extract_path: str)->None:
+    """
+    Recursively extracts all .tar files inside submission.tar and save the output of all extractions in extract_path.
+    :param tar_file_path: Path to the tar file that should be extracted
+    :param extract_path: Save location of the untar content
+    """
+
+    start_files = os.listdir(extract_path)
+    try:
+        file = tarfile.open(tar_file_path)
+        file.extractall(extract_path)
+
+        new_files = os.listdir(extract_path)
+        for file in new_files:
+            if file in start_files:
+                continue
+            elif os.path.splitext(file)[1] == ".tar":
+                extract_all(os.path.join(extract_path, file), extract_path)
+
+    except tarfile.ReadError:
+        print(tar_file_path, "failed")
+    except EOFError:
+        print(tar_file_path, "Cannot untar the file")
+
+
+def extract_all_submissions(lab_path: str) -> None:
+    """
+    Iterates through all student directories under all classes in a lab path and extracts the content inside the file
+    'submission.tar'. Once the files are extracted, checks whether there are new .tar files created. If so, iterates
+    through all the new files and untar the new .tar files.
+
+    :param lab_path: Directory path of the lab
+    :return: None
+    """
+
+    for lab_class in os.listdir(lab_path):
+        # Takes care of .DStore files
+        if lab_class.startswith("."):
+            continue
+        lab_class_path = os.path.join(lab_path, lab_class)
+
+        for dir_path in os.listdir(lab_class_path):
+            dir_path = os.path.join(lab_class_path, dir_path)
+            if os.path.isdir(dir_path):
+                submitted_files = os.listdir(dir_path)
+                if "submission.tar" in submitted_files:
+                    extract_all(os.path.join(dir_path, "submission.tar"), dir_path)
+
+
+def remove_extracted(lab_path: str) -> None:
+    """
+    Iterates through all student directories under all classes in a lab path and removes all extracted files leaving
+    out only the student submitted .tar files and the log file
+
+    :param lab_path: Directory path of the lab
+    """
+
+    for lab_class in os.listdir(lab_path):
+        # Takes care of .DStore files
+        if lab_class.startswith("."):
+            continue
+        lab_class_path = os.path.join(lab_path, lab_class)
+        for dir_path in os.listdir(lab_class_path):
+            dir_path = os.path.join(lab_class_path, dir_path)
+            if os.path.isdir(dir_path):
+                for file_path in os.listdir(dir_path):
+                    file_name, file_ext = os.path.splitext(file_path)
+                    if file_name == "log":
+                        continue
+                    # Use regex to filter out the original .tar files (submission.tar, sub01.tar, ...)
+                    elif file_ext == ".tar" and (re.match("^sub(\d{1,3}$)", file_name)) or file_name == "submission" \
+                            or file_name == "pre-submission":
+                        continue
+                    else:
+                        delete_path = os.path.join(dir_path, file_path)
+                        if os.path.isdir(delete_path):
+                            shutil.rmtree(delete_path)
+                        else:
+                            os.remove(delete_path)

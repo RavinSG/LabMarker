@@ -26,8 +26,11 @@ def main(cfg: Config):
                                           deadline=cfg.marking.deadline, assign=cfg.marking.assign)
         elif action == 2:
             pass
+
         elif action == 3:
-            pass
+            _, extract_lab_path = actions.lab_selection(local_all_labs_path=cfg.paths.local_labs_path)
+            actions.extract_all_submissions(extract_lab_path)
+
         elif action == 4:
             pass
         elif action == 5:
