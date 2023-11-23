@@ -116,8 +116,51 @@ def calculate_late_penalty(delayed_time: timedelta, thresholds: List[timedelta],
         return delay_penalty
 
 
-def check_submission_time(available_classes: List[str], lab_path: str, deadline: Deadline, assign=False,
-                          print_outputs=True) -> Dict[str, datetime]:
+def get_submission_times(available_classes: List[str], lab_path: str, print_outputs: bool = True):
+    submission_times = {}
+    errors = {}
+
+    for curr_class in available_classes:
+        if curr_class.startswith("."):
+            continue
+
+        class_path = os.path.join(lab_path, curr_class)
+        student_dirs = os.listdir(class_path)
+        student_dirs.sort()
+
+        for student_dir in student_dirs:
+            if student_dir.startswith("."):
+                continue
+            try:
+                with open(os.path.join(class_path, student_dir, "log")) as log_file:
+                    try:
+                        final_sub_details = log_file.readlines()[-1].strip()
+                        final_sub_time = final_sub_details.split("\t")[1].split(" ")
+
+                        # Take care of single digit dates. In the log file there is an additional '\t' character
+                        # between the month and the day if the day is a single digit. eg: Oct \t 10 vs Oct \t\t 2. This
+                        # get rids of the additional '\t' and pads the day with a 0
+                        if final_sub_time[2] == "":
+                            final_sub_time.pop(2)
+                            final_sub_time[2] = "0" + final_sub_time[2]
+
+                        final_sub_time = " ".join(final_sub_time[1:])
+                        final_sub_time = datetime.strptime(final_sub_time, "%b %d %H:%M:%S %Y")
+                        submission_times[student_dir] = final_sub_time
+
+                    # If the log file could not be open, the empty list will raise an IndexError
+                    except IndexError:
+                        errors[student_dir] = "IndexError"
+
+            except FileNotFoundError:
+                if print_outputs:
+                    errors[student_dir] = "FileNotFound"
+
+    return submission_times, errors
+
+
+def check_submission_time(available_classes: List[str], lab_path: str, deadline: Deadline,
+                          assign=False) -> Dict[str, datetime]:
     """
     Takes the available classes and the lab path as the input and checks the time of the last submission for each
     student. Opens the log file of each submission and reads the final line to get the last submitted time. Then
@@ -128,18 +171,14 @@ def check_submission_time(available_classes: List[str], lab_path: str, deadline:
     :param lab_path: Absolute file path to the lab folder containing the classes
     :param deadline: Deadline for the selected lab
     :param assign: If ture, uses assignment deadline parameters
-    :param print_outputs: If true, the prompt and submission times will also be printed
     :return: A dictionary containing student id as key and the final submission timestamp as the value
     """
 
-    if print_outputs:
-        print(f"{bcolors.HEADER}Select lab to check curr_class times{bcolors.ENDC}")
-
+    student_num = 0
     # Extract current deadline information from the config file
     current_deadline, thresholds, penalties = get_deadline_info(deadline=deadline, assign=assign)
-    student_num = 0
-    submission_times = {}
-
+    submission_times, errors = get_submission_times(available_classes=available_classes, lab_path=lab_path,
+                                                    print_outputs=True)
     for curr_class in available_classes:
         if curr_class.startswith("."):
             continue
@@ -148,62 +187,39 @@ def check_submission_time(available_classes: List[str], lab_path: str, deadline:
         student_dirs = os.listdir(class_path)
         student_dirs.sort()
 
-        for file in student_dirs:
-            if file.startswith("."):
+        for student in student_dirs:
+            if student.startswith("."):
                 continue
-            try:
-                with open(os.path.join(class_path, file, "log")) as log_file:
-                    # Pad the index number with 0's to make it two digits for formatting purposes
-                    student_num_str = str(student_num).zfill(2)
-                    try:
-                        final_sub_details = log_file.readlines()[-1].strip()
-                        final_sub_time = final_sub_details.split("\t")[1].split(" ")
 
-                    # If the log file could not be open, the empty list will raise an IndexError
-                    except IndexError:
-                        print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.FAIL} {curr_class} {file} "
-                              f"Log file cannot be read! {bcolors.ENDC}")
-                        continue
-
-                    # Take care of single digit dates. In the log file there is an additional '\t' character between the
-                    # month and the day if the day is a single digit. eg: Oct \t 10 vs Oct \t\t 2. This get rids of the
-                    # additional '\t' and pads the day with a 0
-                    if final_sub_time[2] == "":
-                        final_sub_time.pop(2)
-                        final_sub_time[2] = "0" + final_sub_time[2]
-
-                    final_sub_time = " ".join(final_sub_time[1:])
-
-                    final_sub_time = datetime.strptime(final_sub_time, "%b %d %H:%M:%S %Y")
-                    late_submission = current_deadline < final_sub_time
-
-                    if late_submission:
-                        spacing = 5  # Defined for formatting purposes
-                        delay_time = final_sub_time - current_deadline
-                        penalty = calculate_late_penalty(delayed_time=delay_time, thresholds=thresholds,
-                                                         penalties=penalties)
-                        if penalty == -1:
-                            penalty_str = 'rejected'
-                        else:
-                            penalty_str = f"-{str(penalty).zfill(2)}%"
-
-                        if print_outputs:
-                            print(
-                                f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.ENDC} {bcolors.FAIL}{curr_class} {file} "
-                                f"Late Sub Penalty: {f'{penalty_str}'.ljust(spacing)} {delay_time}{bcolors.ENDC}")
-                    else:
-                        if print_outputs:
-                            print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.ENDC}", curr_class, file)
-
-                    student_num += 1
-
-            except FileNotFoundError:
-                if print_outputs:
-                    print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.WARNING} {curr_class} {file} "
+            student_num_str = str(student_num).zfill(2)
+            if student in errors:
+                if errors[student] == "IndexError":
+                    print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.FAIL} {curr_class} {student} "
+                          f"Log file cannot be read! {bcolors.ENDC}")
+                elif errors[student] == "FileNotFound":
+                    print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.WARNING} {curr_class} {student} "
                           f"Log file not found! {bcolors.ENDC}")
 
-            # Store the final submission times in a dict with the string zID of each student as the key
-            submission_times[file] = final_sub_time
+            elif student in submission_times:
+                final_sub_time = submission_times[student]
+                late_submission = current_deadline < final_sub_time
+
+                if late_submission:
+                    spacing = 5  # Defined for formatting purposes
+                    delay_time = final_sub_time - current_deadline
+                    penalty = calculate_late_penalty(delayed_time=delay_time, thresholds=thresholds,
+                                                     penalties=penalties)
+                    if penalty == -1:
+                        penalty_str = 'rejected'
+                    else:
+                        penalty_str = f"-{str(penalty).zfill(2)}%"
+
+                    print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.ENDC} {bcolors.FAIL}{curr_class} {student} "
+                          f"Late Sub Penalty: {f'{penalty_str}'.ljust(spacing)} {delay_time}{bcolors.ENDC}")
+                else:
+                    print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.ENDC}", curr_class, student)
+
+            student_num += 1
 
     return submission_times
 
@@ -333,7 +349,7 @@ def call_download_labs(ssh_client: Client, term: str, dest_path: str, class_name
         download_labs_all_classes(ssh_client, term, selected_lab, class_names, os.path.join(dest_path, selected_lab))
 
 
-def extract_all(tar_file_path: str, extract_path: str)->None:
+def extract_all(tar_file_path: str, extract_path: str) -> None:
     """
     Recursively extracts all .tar files inside submission.tar and save the output of all extractions in extract_path.
     :param tar_file_path: Path to the tar file that should be extracted
@@ -403,8 +419,8 @@ def remove_extracted(lab_path: str) -> None:
                     if file_name == "log":
                         continue
                     # Use regex to filter out the original .tar files (submission.tar, sub01.tar, ...)
-                    elif file_ext == ".tar" and (re.match("^sub(\d{1,3}$)", file_name)) or file_name == "submission" \
-                            or file_name == "pre-submission":
+                    elif (file_ext == ".tar" and (re.match("^sub(\d{1,3}$)", file_name))
+                          or file_name == "submission" or file_name == "pre-submission"):
                         continue
                     else:
                         delete_path = os.path.join(dir_path, file_path)
