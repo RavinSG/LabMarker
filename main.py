@@ -26,8 +26,7 @@ def main(cfg: Config):
         elif action == 2:
             if client is None:
                 client = Client(cfg)
-            actions.get_latest_submission_times(client, cfg.marking.term, cfg.marking.class_names,
-                                                cfg.paths.local_labs_path)
+            actions.check_new_submissions(client, cfg.marking.term, cfg.marking.class_names, cfg.paths.local_labs_path)
 
         elif action == 3:
             _, extract_lab_path = actions.lab_selection(local_all_labs_path=cfg.paths.local_labs_path)
@@ -40,8 +39,8 @@ def main(cfg: Config):
         elif action == 5:
             if client is None:
                 client = Client(cfg)
-            actions.call_download_labs(ssh_client=client, term=cfg.marking.term, dest_path=cfg.paths.local_labs_path,
-                                       class_names=cfg.marking.class_names)
+            actions.download_labs(ssh_client=client, term=cfg.marking.term, dest_path=cfg.paths.local_labs_path,
+                                  class_names=cfg.marking.class_names)
         else:
             break
         print("\n\n")

@@ -1,16 +1,15 @@
 import os
 import re
 import shutil
-import tarfile
 import subprocess
 
-from tqdm import tqdm
 from typing import List, Tuple, Dict
 from datetime import datetime, timedelta
 from collections import defaultdict
 
 from config import bcolors, Deadline
 from connection.ssh import Client
+from interface import remote, utils
 
 
 def print_and_get_sub_selection(lab_names: List[str]) -> int:
@@ -118,24 +117,6 @@ def calculate_late_penalty(delayed_time: timedelta, thresholds: List[timedelta],
         return delay_penalty
 
 
-def parse_time_from_log(log_path):
-    with open(log_path) as log_file:
-        final_sub_details = log_file.readlines()[-1].strip()
-        final_sub_time = final_sub_details.split("\t")[1].split(" ")
-
-        # Take care of single digit dates. In the log file there is an additional '\t' character
-        # between the month and the day if the day is a single digit. eg: Oct \t 10 vs Oct \t\t 2. This
-        # get rids of the additional '\t' and pads the day with a 0
-        if final_sub_time[2] == "":
-            final_sub_time.pop(2)
-            final_sub_time[2] = "0" + final_sub_time[2]
-
-        final_sub_time = " ".join(final_sub_time[1:])
-        final_sub_time = datetime.strptime(final_sub_time, "%b %d %H:%M:%S %Y")
-
-        return final_sub_time
-
-
 def get_submission_times(available_classes: List[str], lab_path: str, print_outputs: bool = True):
     submission_times = {}
     errors = {}
@@ -153,7 +134,7 @@ def get_submission_times(available_classes: List[str], lab_path: str, print_outp
                 continue
             try:
                 log_path = os.path.join(class_path, student_dir, "log")
-                submission_times[student_dir] = parse_time_from_log(log_path)
+                submission_times[student_dir] = utils.parse_time_from_log(log_path)
 
             except IndexError:
                 errors[student_dir] = "IndexError"
@@ -281,63 +262,7 @@ def check_pre_download_conditions(destination_path: str, lab_name: str) -> bool:
         return True
 
 
-def get_user_selection(available_options: List[str]) -> str:
-    """
-    Given a list of lab names, print them to the console in a user-friendly format and waits for the user to make a
-    selection. The selection is validated against non-integer and out of range inputs.
-
-    :param available_options: A list of labs
-    :return: Name on the user selected lab
-    """
-
-    print(f"{bcolors.OKCYAN}Available Labs:{bcolors.ENDC}")
-    for i, lab in enumerate(available_options):
-        print(f"{bcolors.OKBLUE}[{i}]{bcolors.ENDC}", lab)
-
-    while True:
-        selected_option = input(
-            f"{bcolors.OKGREEN}\nSelect your lab w/o brackets: {bcolors.ENDC}")
-
-        try:
-            selected_option = int(selected_option)
-        except ValueError:
-            print(f"{bcolors.FAIL}Please enter a valid number{bcolors.ENDC}")
-            continue
-
-        if selected_option >= len(available_options) or selected_option < 0:
-            print(f"{bcolors.FAIL}Lab not found{bcolors.ENDC}")
-        else:
-            break
-
-    return available_options[selected_option]
-
-
-def download_labs_all_classes(ssh_client: Client, term: str, lab_name: str, class_names: List[str],
-                              save_path: str) -> None:
-    """
-    Downloads all available submissions in the list of class names given.
-
-    :param ssh_client: A Client object with a connected SSH session
-    :param term: From which term these labs should be downloaded
-    :param lab_name: The lab selected
-    :param class_names: The set of classes the submissions should be downloaded from
-    :param save_path: The location of the local save path for the downloaded files
-    :return:
-    """
-    for class_name in class_names:
-        print(f"{bcolors.OKBLUE}Downloading {lab_name} for class: {bcolors.OKCYAN}{class_name}{bcolors.ENDC}")
-        ssh_lab_path = f"/home/cs3331/{term}.work/{lab_name}/{class_name}/"
-        avail_submissions = ssh_client.execute(f"ls {ssh_lab_path}")
-
-        for submission in tqdm(avail_submissions):
-            os.makedirs(os.path.join(save_path, class_name, submission), exist_ok=True)
-
-            # Download all contents inside the folder, including subdirectories
-            ssh_client.download_folder(remote_dir=os.path.join(ssh_lab_path, submission),
-                                       local_dir=os.path.join(save_path, class_name, submission))
-
-
-def call_download_labs(ssh_client: Client, term: str, dest_path: str, class_names: List[str]) -> None:
+def download_labs(ssh_client: Client, term: str, dest_path: str, class_names: List[str]) -> None:
     """
     Connects to cse servers through SSH and downloads the submissions of all the classes defined in the config file.
 
@@ -349,35 +274,11 @@ def call_download_labs(ssh_client: Client, term: str, dest_path: str, class_name
 
     list_labs = f"ls /home/cs3331/{term}.work"
     avail_labs = ssh_client.execute(list_labs)
-    selected_lab = get_user_selection(avail_labs)
+    selected_lab = utils.get_user_selection(avail_labs)
 
     if check_pre_download_conditions(dest_path, selected_lab):
-        download_labs_all_classes(ssh_client, term, selected_lab, class_names, os.path.join(dest_path, selected_lab))
-
-
-def extract_all(tar_file_path: str, extract_path: str) -> None:
-    """
-    Recursively extracts all .tar files inside submission.tar and save the output of all extractions in extract_path.
-    :param tar_file_path: Path to the tar file that should be extracted
-    :param extract_path: Save location of the untar content
-    """
-
-    start_files = os.listdir(extract_path)
-    try:
-        file = tarfile.open(tar_file_path)
-        file.extractall(extract_path)
-
-        new_files = os.listdir(extract_path)
-        for file in new_files:
-            if file in start_files:
-                continue
-            elif os.path.splitext(file)[1] == ".tar":
-                extract_all(os.path.join(extract_path, file), extract_path)
-
-    except tarfile.ReadError:
-        print(tar_file_path, "failed")
-    except EOFError:
-        print(tar_file_path, "Cannot untar the file")
+        remote.download_labs_all_classes(ssh_client, term, selected_lab, class_names,
+                                         os.path.join(dest_path, selected_lab))
 
 
 def extract_all_submissions(lab_path: str) -> None:
@@ -401,7 +302,7 @@ def extract_all_submissions(lab_path: str) -> None:
             if os.path.isdir(dir_path):
                 submitted_files = os.listdir(dir_path)
                 if "submission.tar" in submitted_files:
-                    extract_all(os.path.join(dir_path, "submission.tar"), dir_path)
+                    utils.extract_all(os.path.join(dir_path, "submission.tar"), dir_path)
 
 
 def remove_extracted(lab_path: str) -> None:
@@ -436,19 +337,8 @@ def remove_extracted(lab_path: str) -> None:
                             os.remove(delete_path)
 
 
-def get_latest_submission_times(ssh_client: Client, term, classes, l_labs_path):
-    r_all_lab_path = f"/home/cs3331/{term}.work"
-    r_avail_labs = ssh_client.execute(f"ls {r_all_lab_path}")
-
-    selected_lab = get_user_selection(r_avail_labs)
-    r_lab_path = os.path.join(r_all_lab_path, selected_lab)
-
-    r_log_paths = []
-    for selected_class in classes:
-        find_str = f"find {r_lab_path}/{selected_class} -type f -name log"
-        r_class_log_paths = ssh_client.execute(find_str)
-        if r_class_log_paths:
-            r_log_paths += r_class_log_paths
+def check_new_submissions(ssh_client: Client, term, classes, l_labs_path):
+    r_log_paths, selected_lab = remote.get_log_paths(ssh_client, term, classes)
 
     if os.path.exists(".temp"):
         shutil.rmtree(".temp")
@@ -462,7 +352,7 @@ def get_latest_submission_times(ssh_client: Client, term, classes, l_labs_path):
 
     new_sub_time = {}
     for log_file in os.listdir(".temp"):
-        last_sub_time = parse_time_from_log(os.path.join(".temp", log_file))
+        last_sub_time = utils.parse_time_from_log(os.path.join(".temp", log_file))
         new_sub_time[log_file] = last_sub_time
 
     l_selected_lab_path = os.path.join(l_labs_path, selected_lab)
@@ -474,7 +364,7 @@ def get_latest_submission_times(ssh_client: Client, term, classes, l_labs_path):
     old_sub_times = {}
     for l_log_path in l_log_paths:
         student_id = l_log_path.split("/")[-2]
-        old_sub_time = parse_time_from_log(l_log_path)
+        old_sub_time = utils.parse_time_from_log(l_log_path)
 
         old_sub_times[student_id] = old_sub_time
 
