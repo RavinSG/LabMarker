@@ -118,7 +118,16 @@ def calculate_late_penalty(delayed_time: timedelta, thresholds: List[timedelta],
         return delay_penalty
 
 
-def get_submission_times(available_classes: List[str], lab_path: str, print_outputs: bool = True):
+def get_submission_times(available_classes: List[str], lab_path: str) -> Tuple[Dict[str, datetime], Dict[str, str]]:
+    """
+    Iterates through all submissions inside the lab directory and extract the final submission from each submission.
+    These are stored in a dictionary with the zID as the key and the time as the key. If there is an error with opening
+    or reading the logfile, this information will be written to the error dict in the above same format.
+
+    :param available_classes: List of available classes for selected lab
+    :param lab_path: Absolute file path to the lab folder containing the classes
+    :return: Two dictionaries containing the submission times and errors
+    """
     submission_times = {}
     errors = {}
 
@@ -141,8 +150,7 @@ def get_submission_times(available_classes: List[str], lab_path: str, print_outp
                 errors[student_dir] = "IndexError"
 
             except FileNotFoundError:
-                if print_outputs:
-                    errors[student_dir] = "FileNotFound"
+                errors[student_dir] = "FileNotFound"
 
     return submission_times, errors
 
@@ -165,8 +173,7 @@ def check_late_submission(available_classes: List[str], lab_path: str, deadline:
     student_num = 0
     # Extract current deadline information from the config file
     current_deadline, thresholds, penalties = get_deadline_info(deadline=deadline, assign=assign)
-    submission_times, errors = get_submission_times(available_classes=available_classes, lab_path=lab_path,
-                                                    print_outputs=True)
+    submission_times, errors = get_submission_times(available_classes=available_classes, lab_path=lab_path)
     for curr_class in available_classes:
         if curr_class.startswith("."):
             continue
@@ -338,7 +345,18 @@ def remove_extracted(lab_path: str) -> None:
                             os.remove(delete_path)
 
 
-def check_new_submissions(ssh_client: Client, term, classes, l_labs_path):
+# TODO: Add functionality to download the updated submissions
+def check_new_submissions(ssh_client: Client, term: str, classes: List[str], l_labs_path: str) -> None:
+    """
+    Check whether there are updated or new submissions since the last download of a lab. If there are, the updated
+    submissions are printed to the console.
+
+    :param ssh_client: A Client object with a connected SSH session
+    :param term: From which term these labs should be checked for updates
+    :param classes: The set of classes the user teaches for that term
+    :param l_labs_path: Location of the last download submissions of the lab
+    """
+
     r_log_paths, selected_lab = remote.get_log_paths(ssh_client, term, classes)
 
     if os.path.exists(".temp"):

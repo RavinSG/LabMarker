@@ -62,7 +62,13 @@ def extract_all(tar_file_path: str, extract_path: str) -> None:
         print(tar_file_path, "Cannot untar the file")
 
 
-def parse_time_from_log(log_path):
+def parse_time_from_log(log_path: str) -> datetime:
+    """
+    Opens the log file and extracts the last line to read the final submission time of the student.
+
+    :param log_path: Path to the log file
+    :return: A datetime object of the final submission time
+    """
     with open(log_path) as log_file:
         final_sub_details = log_file.readlines()[-1].strip()
         final_sub_time = final_sub_details.split("\t")[1].split(" ")

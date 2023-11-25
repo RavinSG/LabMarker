@@ -1,6 +1,6 @@
 import os
 from tqdm import tqdm
-from typing import List
+from typing import List, Tuple
 
 from config import bcolors
 from connection.ssh import Client
@@ -32,7 +32,16 @@ def download_labs_all_classes(ssh_client: Client, term: str, lab_name: str, clas
                                        local_dir=os.path.join(save_path, class_name, submission))
 
 
-def get_log_paths(ssh_client: Client, term, classes):
+def get_log_paths(ssh_client: Client, term: str, classes: List[str]) -> Tuple[List[str], str]:
+    """
+    Prompts the user to select the lab they want to check for updates. Then search lab directory at the SSH client to
+    find all log files present in the directory and generated a list containing paths to all the identified log files.
+
+    :param ssh_client: A Client object with a connected SSH session
+    :param term: From which term these labs should be checked for updates
+    :param classes: The set of classes the user teaches for that term
+    :return: A tuple containing the identified log paths and the user selected lab
+    """
     r_all_lab_path = f"/home/cs3331/{term}.work"
     r_avail_labs = ssh_client.execute(f"ls {r_all_lab_path}")
 
