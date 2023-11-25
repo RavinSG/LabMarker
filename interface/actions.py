@@ -66,14 +66,15 @@ def get_deadline_info(deadline: Deadline, assign=False) -> Tuple[datetime, List[
     Extract the current deadline, thresholds, and penalty values from the config file. The thresholds and penalties
     lists can have different number of elements. In such a case the minimum number of elements of both is selected.
     eg:
-        Threshold: [30, 1440, 2880, 4320, 5760]
-        Penalties: [0, 5, 10]
+        \n\tThreshold: [30, 1440, 2880, 4320, 5760]
+        \n\tPenalties: [0, 5, 10]
     Then the code will consider as there are only 3 penalty brackets.
 
     :param deadline: The deadline of the current lab
     :param assign: If true, the extended deadline system for assignments will be used
     :return: A tuple containing the current deadline, thresholds, and penalty
     """
+
     current_deadline = datetime.strptime(deadline.cur, "%Y/%m/%d %H:%M:%S")
     thresholds = deadline.thresholds
 

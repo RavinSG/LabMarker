@@ -5,6 +5,6 @@ Marking_GUI
    :maxdepth: 4
 
    config
-   main
    connection
    interface
+   main

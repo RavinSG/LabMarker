@@ -39,8 +39,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Marking_GUI</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -129,6 +132,9 @@
             <span class="k">return</span> <span class="n">output</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Client.download_file"><a class="viewcode-back" href="../../connection.html#connection.ssh.Client.download_file">[docs]</a>    <span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_file</span><span class="p">,</span> <span class="n">local_dest</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sftp_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">remote_file</span><span class="p">,</span> <span class="n">local_dest</span><span class="p">)</span></div>
 
     <span class="c1"># Paramiko doesn&#39;t support recursive download, need to implement it manually</span>
 <div class="viewcode-block" id="Client.download_folder"><a class="viewcode-back" href="../../connection.html#connection.ssh.Client.download_folder">[docs]</a>    <span class="k">def</span> <span class="nf">download_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_dir</span><span class="p">,</span> <span class="n">local_dir</span><span class="p">):</span>

@@ -12,6 +12,22 @@ interface.actions module
    :undoc-members:
    :show-inheritance:
 
+interface.remote module
+-----------------------
+
+.. automodule:: interface.remote
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+interface.utils module
+----------------------
+
+.. automodule:: interface.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

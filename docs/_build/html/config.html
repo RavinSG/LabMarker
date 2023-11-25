@@ -18,7 +18,9 @@
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="main module" href="main.html" />
+    <link rel="prev" title="Marking_GUI" href="modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,57 +42,63 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">config module</a><ul>
-<li><a class="reference internal" href="#config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a><ul>
-<li><a class="reference internal" href="#config.Config.connection"><code class="docutils literal notranslate"><span class="pre">Config.connection</span></code></a></li>
-<li><a class="reference internal" href="#config.Config.marking"><code class="docutils literal notranslate"><span class="pre">Config.marking</span></code></a></li>
-<li><a class="reference internal" href="#config.Config.paths"><code class="docutils literal notranslate"><span class="pre">Config.paths</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Marking_GUI</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#config.Config.connection"><code class="docutils literal notranslate"><span class="pre">Config.connection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Config.marking"><code class="docutils literal notranslate"><span class="pre">Config.marking</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Config.paths"><code class="docutils literal notranslate"><span class="pre">Config.paths</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#config.Connection"><code class="docutils literal notranslate"><span class="pre">Connection</span></code></a><ul>
-<li><a class="reference internal" href="#config.Connection.host_name"><code class="docutils literal notranslate"><span class="pre">Connection.host_name</span></code></a></li>
-<li><a class="reference internal" href="#config.Connection.private_key"><code class="docutils literal notranslate"><span class="pre">Connection.private_key</span></code></a></li>
-<li><a class="reference internal" href="#config.Connection.use_pass"><code class="docutils literal notranslate"><span class="pre">Connection.use_pass</span></code></a></li>
-<li><a class="reference internal" href="#config.Connection.username"><code class="docutils literal notranslate"><span class="pre">Connection.username</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config.Connection"><code class="docutils literal notranslate"><span class="pre">Connection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#config.Connection.host_name"><code class="docutils literal notranslate"><span class="pre">Connection.host_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Connection.private_key"><code class="docutils literal notranslate"><span class="pre">Connection.private_key</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Connection.use_pass"><code class="docutils literal notranslate"><span class="pre">Connection.use_pass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Connection.username"><code class="docutils literal notranslate"><span class="pre">Connection.username</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#config.Deadline"><code class="docutils literal notranslate"><span class="pre">Deadline</span></code></a><ul>
-<li><a class="reference internal" href="#config.Deadline.assign_penalties"><code class="docutils literal notranslate"><span class="pre">Deadline.assign_penalties</span></code></a></li>
-<li><a class="reference internal" href="#config.Deadline.cur"><code class="docutils literal notranslate"><span class="pre">Deadline.cur</span></code></a></li>
-<li><a class="reference internal" href="#config.Deadline.lab_penalties"><code class="docutils literal notranslate"><span class="pre">Deadline.lab_penalties</span></code></a></li>
-<li><a class="reference internal" href="#config.Deadline.thresholds"><code class="docutils literal notranslate"><span class="pre">Deadline.thresholds</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config.Deadline"><code class="docutils literal notranslate"><span class="pre">Deadline</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#config.Deadline.assign_penalties"><code class="docutils literal notranslate"><span class="pre">Deadline.assign_penalties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Deadline.cur"><code class="docutils literal notranslate"><span class="pre">Deadline.cur</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Deadline.lab_penalties"><code class="docutils literal notranslate"><span class="pre">Deadline.lab_penalties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Deadline.thresholds"><code class="docutils literal notranslate"><span class="pre">Deadline.thresholds</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#config.Marking"><code class="docutils literal notranslate"><span class="pre">Marking</span></code></a><ul>
-<li><a class="reference internal" href="#config.Marking.assign"><code class="docutils literal notranslate"><span class="pre">Marking.assign</span></code></a></li>
-<li><a class="reference internal" href="#config.Marking.class_names"><code class="docutils literal notranslate"><span class="pre">Marking.class_names</span></code></a></li>
-<li><a class="reference internal" href="#config.Marking.deadline"><code class="docutils literal notranslate"><span class="pre">Marking.deadline</span></code></a></li>
-<li><a class="reference internal" href="#config.Marking.term"><code class="docutils literal notranslate"><span class="pre">Marking.term</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config.Marking"><code class="docutils literal notranslate"><span class="pre">Marking</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#config.Marking.assign"><code class="docutils literal notranslate"><span class="pre">Marking.assign</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Marking.class_names"><code class="docutils literal notranslate"><span class="pre">Marking.class_names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Marking.deadline"><code class="docutils literal notranslate"><span class="pre">Marking.deadline</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Marking.term"><code class="docutils literal notranslate"><span class="pre">Marking.term</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#config.Paths"><code class="docutils literal notranslate"><span class="pre">Paths</span></code></a><ul>
-<li><a class="reference internal" href="#config.Paths.known_hosts"><code class="docutils literal notranslate"><span class="pre">Paths.known_hosts</span></code></a></li>
-<li><a class="reference internal" href="#config.Paths.local_labs_path"><code class="docutils literal notranslate"><span class="pre">Paths.local_labs_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config.Paths"><code class="docutils literal notranslate"><span class="pre">Paths</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#config.Paths.known_hosts"><code class="docutils literal notranslate"><span class="pre">Paths.known_hosts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Paths.local_labs_path"><code class="docutils literal notranslate"><span class="pre">Paths.local_labs_path</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#config.bcolors"><code class="docutils literal notranslate"><span class="pre">bcolors</span></code></a><ul>
-<li><a class="reference internal" href="#config.bcolors.BOLD"><code class="docutils literal notranslate"><span class="pre">bcolors.BOLD</span></code></a></li>
-<li><a class="reference internal" href="#config.bcolors.ENDC"><code class="docutils literal notranslate"><span class="pre">bcolors.ENDC</span></code></a></li>
-<li><a class="reference internal" href="#config.bcolors.FAIL"><code class="docutils literal notranslate"><span class="pre">bcolors.FAIL</span></code></a></li>
-<li><a class="reference internal" href="#config.bcolors.HEADER"><code class="docutils literal notranslate"><span class="pre">bcolors.HEADER</span></code></a></li>
-<li><a class="reference internal" href="#config.bcolors.OKBLUE"><code class="docutils literal notranslate"><span class="pre">bcolors.OKBLUE</span></code></a></li>
-<li><a class="reference internal" href="#config.bcolors.OKCYAN"><code class="docutils literal notranslate"><span class="pre">bcolors.OKCYAN</span></code></a></li>
-<li><a class="reference internal" href="#config.bcolors.OKGREEN"><code class="docutils literal notranslate"><span class="pre">bcolors.OKGREEN</span></code></a></li>
-<li><a class="reference internal" href="#config.bcolors.UNDERLINE"><code class="docutils literal notranslate"><span class="pre">bcolors.UNDERLINE</span></code></a></li>
-<li><a class="reference internal" href="#config.bcolors.WARNING"><code class="docutils literal notranslate"><span class="pre">bcolors.WARNING</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#config.bcolors"><code class="docutils literal notranslate"><span class="pre">bcolors</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#config.bcolors.BOLD"><code class="docutils literal notranslate"><span class="pre">bcolors.BOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.bcolors.ENDC"><code class="docutils literal notranslate"><span class="pre">bcolors.ENDC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.bcolors.FAIL"><code class="docutils literal notranslate"><span class="pre">bcolors.FAIL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.bcolors.HEADER"><code class="docutils literal notranslate"><span class="pre">bcolors.HEADER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.bcolors.OKBLUE"><code class="docutils literal notranslate"><span class="pre">bcolors.OKBLUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.bcolors.OKCYAN"><code class="docutils literal notranslate"><span class="pre">bcolors.OKCYAN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.bcolors.OKGREEN"><code class="docutils literal notranslate"><span class="pre">bcolors.OKGREEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.bcolors.UNDERLINE"><code class="docutils literal notranslate"><span class="pre">bcolors.UNDERLINE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.bcolors.WARNING"><code class="docutils literal notranslate"><span class="pre">bcolors.WARNING</span></code></a></li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connection.html">connection package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface package</a></li>
+</ul>
+</li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -105,6 +113,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Marking_GUI</a></li>
       <li class="breadcrumb-item active">config module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/config.rst.txt" rel="nofollow"> View page source</a>
@@ -288,7 +297,10 @@
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="Marking_GUI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="main.html" class="btn btn-neutral float-right" title="main module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

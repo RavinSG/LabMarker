@@ -4,6 +4,14 @@ connection package
 Submodules
 ----------
 
+connection.dbo module
+---------------------
+
+.. automodule:: connection.dbo
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 connection.ssh module
 ---------------------
 
