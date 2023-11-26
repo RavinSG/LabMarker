@@ -3,7 +3,7 @@ import re
 import shutil
 import subprocess
 
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Union
 from datetime import datetime, timedelta
 from collections import defaultdict
 
@@ -15,7 +15,7 @@ from interface import remote, utils
 class Actions:
     def __init__(self, cfg: Config, out_stream=None):
         self.out_stream = out_stream
-        self.ssh_client = None
+        self.ssh_client: Union[Client, None] = None
 
         self.cfg = cfg
         self.paths = cfg.paths
@@ -25,10 +25,16 @@ class Actions:
         if self.out_stream is None:
             print(message)
 
+    def close(self):
+        if self.ssh_client:
+            self.ssh_client.close()
+            self.ssh_client = None
+
     def lab_selection(self) -> Tuple[List[str], str]:
         """
-        Lists down all available labs in the given path and prompts the user to pick a specific lab number.
-        If the input lab number is present, returns all class names under the given lab and their respective directory paths
+        Lists down all available labs in the local download path and prompts the user to pick a specific lab number.
+        If the input lab number is present, returns all class names under the given lab and their respective directory
+        paths
 
         :return: The available class names (eg: 'fri09-oboe') in the lab and the path of the lab directory
         """
@@ -41,22 +47,24 @@ class Actions:
 
         return avail_classes, lab_path
 
-    def check_late_submission(self, available_classes: List[str], lab_path: str) -> Dict[str, datetime]:
+    def check_late_submissions(self) -> Dict[str, datetime]:
         """
-        Takes the available classes and the lab path as the input and checks the time of the last submission for each
-        student. Opens the log file of each submission and reads the final line to get the last submitted time. Then
-        compares this value with the curr_deadline. If the deadline is exceeded, based on the delayed time calculates the
-        penalty.
+        Prompts the user to select a lab from the downloaded labs. After selecting a lab, uses the available classes
+        for that lab and the lab path to check the time of the last submission for each student. Opens the log file of
+        each submission and reads the final line to get the last submitted time. Then compares this value with the
+        curr_deadline. If the deadline is exceeded, based on the delayed time calculates the penalty.
 
-        :param available_classes: List of available classes for selected lab
-        :param lab_path: Absolute file path to the lab folder containing the classes
         :return: A dictionary containing student id as key and the final submission timestamp as the value
         """
 
         student_num = 0
+        available_classes, lab_path = self.lab_selection()
+
         # Extract current deadline information from the config file
         current_deadline, thresholds, penalties = get_deadline_info(deadline=self.marking.deadline,
                                                                     assign=self.marking.assign)
+
+        # Create a dictionary containing the final submission times of the students
         submission_times, errors = get_submission_times(available_classes=available_classes, lab_path=lab_path)
         for curr_class in available_classes:
             if curr_class.startswith("."):
@@ -70,11 +78,14 @@ class Actions:
                 if student.startswith("."):
                     continue
 
-                student_num_str = str(student_num).zfill(2)
+                student_num_str = str(student_num).zfill(2)  # Formatting for printing to the terminal
                 if student in errors:
+                    # Checks whether the logfile is empty
                     if errors[student] == "IndexError":
                         print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.FAIL} {curr_class} {student} "
                               f"Log file cannot be read! {bcolors.ENDC}")
+
+                    # Checks whether the logfile is missing
                     elif errors[student] == "FileNotFound":
                         print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.WARNING} {curr_class} {student} "
                               f"Log file not found! {bcolors.ENDC}")
@@ -96,15 +107,12 @@ class Actions:
                         print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.ENDC} {bcolors.FAIL}{curr_class} {student} "
                               f"Late Sub Penalty: {f'{penalty_str}'.ljust(spacing)} {delay_time}{bcolors.ENDC}")
                     else:
+                        # If there are no issues with the logfile and the deadline is not exceeded just print the zID
                         print(f"{bcolors.OKBLUE}[{student_num_str}]{bcolors.ENDC}", curr_class, student)
 
                 student_num += 1
 
         return submission_times
-
-    def check_late_submissions(self):
-        available_classes, lab_path = self.lab_selection()
-        self.check_late_submission(available_classes=available_classes, lab_path=lab_path)
 
     # TODO: Add functionality to download the updated submissions
     def check_new_submissions(self) -> None:
@@ -160,9 +168,9 @@ class Actions:
 
     def extract_all_submissions(self) -> None:
         """
-        Iterates through all student directories under all classes in a lab path and extracts the content inside the file
+        Iterates through all student directories in a lab directory and extracts the content inside the file
         'submission.tar'. Once the files are extracted, checks whether there are new .tar files created. If so, iterates
-        through all the new files and untar the new .tar files.
+         through all the new files and untar the new .tar files.
         """
 
         # Get the path of the lab that nees to be extracted
@@ -178,6 +186,8 @@ class Actions:
                 dir_path = os.path.join(lab_class_path, dir_path)
                 if os.path.isdir(dir_path):
                     submitted_files = os.listdir(dir_path)
+
+                    # Select the submission.tar file inside the student directory
                     if "submission.tar" in submitted_files:
                         utils.extract_all(os.path.join(dir_path, "submission.tar"), dir_path)
 
@@ -195,11 +205,11 @@ class Actions:
                 continue
 
             lab_class_path = os.path.join(lab_path_to_clear, lab_class)
-            for dir_path in os.listdir(lab_class_path):
-                dir_path = os.path.join(lab_class_path, dir_path)
+            for student_dir_path in os.listdir(lab_class_path):
+                student_dir_path = os.path.join(lab_class_path, student_dir_path)
 
-                if os.path.isdir(dir_path):
-                    for file_path in os.listdir(dir_path):
+                if os.path.isdir(student_dir_path):
+                    for file_path in os.listdir(student_dir_path):
                         file_name, file_ext = os.path.splitext(file_path)
 
                         if file_name == "log":
@@ -211,7 +221,7 @@ class Actions:
                             continue
 
                         else:
-                            delete_path = os.path.join(dir_path, file_path)
+                            delete_path = os.path.join(student_dir_path, file_path)
                             if os.path.isdir(delete_path):
                                 shutil.rmtree(delete_path)
 
@@ -226,9 +236,11 @@ class Actions:
             self.ssh_client = Client(self.cfg)
 
         list_labs = f"ls /home/cs3331/{self.marking.term}.work"
+        # Get the available labs from the CSE server
         avail_labs = self.ssh_client.execute(list_labs)
         selected_lab = utils.get_user_selection(avail_labs)
 
+        # Before downloading, check whether there is an existing lab downloaded before
         if check_pre_download_conditions(self.paths.local_labs_path, selected_lab):
             remote.download_labs_all_classes(self.ssh_client, self.marking.term, selected_lab, self.marking.class_names,
                                              os.path.join(self.paths.local_labs_path, selected_lab))
