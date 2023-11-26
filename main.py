@@ -1,13 +1,13 @@
 import hydra
 
-from connection.ssh import Client
-from interface import actions
+from interface.actions import Actions
 from config import Config, bcolors
 
 
 @hydra.main(config_path='.', config_name="config.yaml", version_base=None)
 def main(cfg: Config):
     client = None
+    marking_actions = Actions(cfg)
 
     while True:
         action = input(
@@ -18,29 +18,23 @@ def main(cfg: Config):
             f"[4] Remove extracted \n \t\t "
             f"[5] Download labs through SSH \n \t\t "
             f"\n{bcolors.OKBLUE}Action: {bcolors.ENDC}")
+
         action = int(action)
         if action == 1:
-            available_classes, lab_path = actions.lab_selection(local_all_labs_path=cfg.paths.local_labs_path)
-            actions.check_late_submission(available_classes=available_classes, lab_path=lab_path,
-                                          deadline=cfg.marking.deadline, assign=cfg.marking.assign)
+            marking_actions.check_late_submissions()
+
         elif action == 2:
-            if client is None:
-                client = Client(cfg)
-            actions.check_new_submissions(client, cfg.marking.term, cfg.marking.class_names, cfg.paths.local_labs_path)
+            marking_actions.check_new_submissions()
 
         elif action == 3:
-            _, extract_lab_path = actions.lab_selection(local_all_labs_path=cfg.paths.local_labs_path)
-            actions.extract_all_submissions(extract_lab_path)
+            marking_actions.extract_all_submissions()
 
         elif action == 4:
-            _, lab_path_to_clear = actions.lab_selection(local_all_labs_path=cfg.paths.local_labs_path)
-            actions.remove_extracted(lab_path_to_clear)
+            marking_actions.remove_extracted()
 
         elif action == 5:
-            if client is None:
-                client = Client(cfg)
-            actions.download_labs(ssh_client=client, term=cfg.marking.term, dest_path=cfg.paths.local_labs_path,
-                                  class_names=cfg.marking.class_names)
+            marking_actions.download_labs()
+
         else:
             break
         print("\n\n")

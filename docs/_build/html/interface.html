@@ -50,17 +50,12 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">interface package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-interface.actions">interface.actions module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#interface.actions.Actions"><code class="docutils literal notranslate"><span class="pre">Actions</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interface.actions.calculate_late_penalty"><code class="docutils literal notranslate"><span class="pre">calculate_late_penalty()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#interface.actions.check_late_submission"><code class="docutils literal notranslate"><span class="pre">check_late_submission()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#interface.actions.check_new_submissions"><code class="docutils literal notranslate"><span class="pre">check_new_submissions()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interface.actions.check_pre_download_conditions"><code class="docutils literal notranslate"><span class="pre">check_pre_download_conditions()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#interface.actions.download_labs"><code class="docutils literal notranslate"><span class="pre">download_labs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#interface.actions.extract_all_submissions"><code class="docutils literal notranslate"><span class="pre">extract_all_submissions()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interface.actions.get_deadline_info"><code class="docutils literal notranslate"><span class="pre">get_deadline_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interface.actions.get_submission_times"><code class="docutils literal notranslate"><span class="pre">get_submission_times()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#interface.actions.lab_selection"><code class="docutils literal notranslate"><span class="pre">lab_selection()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interface.actions.print_and_get_sub_selection"><code class="docutils literal notranslate"><span class="pre">print_and_get_sub_selection()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#interface.actions.remove_extracted"><code class="docutils literal notranslate"><span class="pre">remove_extracted()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-interface.remote">interface.remote module</a><ul>
@@ -114,6 +109,82 @@
 </section>
 <section id="module-interface.actions">
 <span id="interface-actions-module"></span><h2>interface.actions module<a class="headerlink" href="#module-interface.actions" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="interface.actions.Actions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">Actions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="config.html#config.Config" title="config.Config"><span class="pre">Config</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interface/actions.html#Actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.Actions" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="interface.actions.Actions.check_late_submission">
+<span class="sig-name descname"><span class="pre">check_late_submission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">available_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/interface/actions.html#Actions.check_late_submission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.Actions.check_late_submission" title="Permalink to this definition"></a></dt>
+<dd><p>Takes the available classes and the lab path as the input and checks the time of the last submission for each
+student. Opens the log file of each submission and reads the final line to get the last submitted time. Then
+compares this value with the curr_deadline. If the deadline is exceeded, based on the delayed time calculates the
+penalty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>available_classes</strong> – List of available classes for selected lab</p></li>
+<li><p><strong>lab_path</strong> – Absolute file path to the lab folder containing the classes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing student id as key and the final submission timestamp as the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interface.actions.Actions.check_late_submissions">
+<span class="sig-name descname"><span class="pre">check_late_submissions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/interface/actions.html#Actions.check_late_submissions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.Actions.check_late_submissions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interface.actions.Actions.check_new_submissions">
+<span class="sig-name descname"><span class="pre">check_new_submissions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/interface/actions.html#Actions.check_new_submissions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.Actions.check_new_submissions" title="Permalink to this definition"></a></dt>
+<dd><p>Check whether there are updated or new submissions since the last download of a lab. If there are, the updated
+submissions are printed to the console.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interface.actions.Actions.download_labs">
+<span class="sig-name descname"><span class="pre">download_labs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/interface/actions.html#Actions.download_labs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.Actions.download_labs" title="Permalink to this definition"></a></dt>
+<dd><p>Connects to cse servers through SSH and downloads the submissions of all the classes defined in the config file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interface.actions.Actions.extract_all_submissions">
+<span class="sig-name descname"><span class="pre">extract_all_submissions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/interface/actions.html#Actions.extract_all_submissions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.Actions.extract_all_submissions" title="Permalink to this definition"></a></dt>
+<dd><p>Iterates through all student directories under all classes in a lab path and extracts the content inside the file
+‘submission.tar’. Once the files are extracted, checks whether there are new .tar files created. If so, iterates
+through all the new files and untar the new .tar files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interface.actions.Actions.lab_selection">
+<span class="sig-name descname"><span class="pre">lab_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/interface/actions.html#Actions.lab_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.Actions.lab_selection" title="Permalink to this definition"></a></dt>
+<dd><p>Lists down all available labs in the given path and prompts the user to pick a specific lab number.
+If the input lab number is present, returns all class names under the given lab and their respective directory paths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The available class names (eg: ‘fri09-oboe’) in the lab and the path of the lab directory</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interface.actions.Actions.remove_extracted">
+<span class="sig-name descname"><span class="pre">remove_extracted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/interface/actions.html#Actions.remove_extracted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.Actions.remove_extracted" title="Permalink to this definition"></a></dt>
+<dd><p>Iterates through all student directories under all classes in a lab path and removes all extracted files leaving
+out only the student submitted .tar files and the log file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="interface.actions.Actions.write_to_out_stream">
+<span class="sig-name descname"><span class="pre">write_to_out_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interface/actions.html#Actions.write_to_out_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.Actions.write_to_out_stream" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="interface.actions.calculate_late_penalty">
 <span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">calculate_late_penalty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delayed_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">timedelta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresholds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">timedelta</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/interface/actions.html#calculate_late_penalty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.calculate_late_penalty" title="Permalink to this definition"></a></dt>
@@ -135,45 +206,6 @@ thresholds and penalties.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="interface.actions.check_late_submission">
-<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">check_late_submission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">available_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="config.html#config.Deadline" title="config.Deadline"><span class="pre">Deadline</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/interface/actions.html#check_late_submission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.check_late_submission" title="Permalink to this definition"></a></dt>
-<dd><p>Takes the available classes and the lab path as the input and checks the time of the last submission for each
-student. Opens the log file of each submission and reads the final line to get the last submitted time. Then
-compares this value with the curr_deadline. If the deadline is exceeded, based on the delayed time calculates the
-penalty.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>available_classes</strong> – List of available classes for selected lab</p></li>
-<li><p><strong>lab_path</strong> – Absolute file path to the lab folder containing the classes</p></li>
-<li><p><strong>deadline</strong> – Deadline for the selected lab</p></li>
-<li><p><strong>assign</strong> – If ture, uses assignment deadline parameters</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A dictionary containing student id as key and the final submission timestamp as the value</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="interface.actions.check_new_submissions">
-<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">check_new_submissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssh_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection.html#connection.ssh.Client" title="connection.ssh.Client"><span class="pre">Client</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_labs_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/interface/actions.html#check_new_submissions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.check_new_submissions" title="Permalink to this definition"></a></dt>
-<dd><p>Check whether there are updated or new submissions since the last download of a lab. If there are, the updated
-submissions are printed to the console.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ssh_client</strong> – A Client object with a connected SSH session</p></li>
-<li><p><strong>term</strong> – From which term these labs should be checked for updates</p></li>
-<li><p><strong>classes</strong> – The set of classes the user teaches for that term</p></li>
-<li><p><strong>l_labs_path</strong> – Location of the last download submissions of the lab</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="interface.actions.check_pre_download_conditions">
 <span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">check_pre_download_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/interface/actions.html#check_pre_download_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.check_pre_download_conditions" title="Permalink to this definition"></a></dt>
 <dd><p>Before downloading the labs, check whether there are pre-existing submissions of the same lab in the download
@@ -188,38 +220,6 @@ folder prefixed with .lastrun and the new labs will be downloaded.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns False if the user aborts the process</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="interface.actions.download_labs">
-<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">download_labs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssh_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection.html#connection.ssh.Client" title="connection.ssh.Client"><span class="pre">Client</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/interface/actions.html#download_labs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.download_labs" title="Permalink to this definition"></a></dt>
-<dd><p>Connects to cse servers through SSH and downloads the submissions of all the classes defined in the config file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ssh_client</strong> – A Client object with a connected SSH session</p></li>
-<li><p><strong>term</strong> – From which term these labs should be downloaded</p></li>
-<li><p><strong>dest_path</strong> – The location of the local save path for the lab directory</p></li>
-<li><p><strong>class_names</strong> – The set of classes the user teaches for that term</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="interface.actions.extract_all_submissions">
-<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">extract_all_submissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/interface/actions.html#extract_all_submissions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.extract_all_submissions" title="Permalink to this definition"></a></dt>
-<dd><p>Iterates through all student directories under all classes in a lab path and extracts the content inside the file
-‘submission.tar’. Once the files are extracted, checks whether there are new .tar files created. If so, iterates
-through all the new files and untar the new .tar files.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>lab_path</strong> – Directory path of the lab</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -268,21 +268,6 @@ or reading the logfile, this information will be written to the error dict in th
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="interface.actions.lab_selection">
-<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">lab_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_all_labs_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/interface/actions.html#lab_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.lab_selection" title="Permalink to this definition"></a></dt>
-<dd><p>Lists down all available labs in the given path and prompts the user to pick a specific lab number.
-If the input lab number is present, returns all class names under the given lab and their respective directory paths</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>local_all_labs_path</strong> – Path of the local save location of all labs</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The available class names (eg: ‘fri09-oboe’) in the lab and the path of the lab directory</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="interface.actions.print_and_get_sub_selection">
 <span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">print_and_get_sub_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/interface/actions.html#print_and_get_sub_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.print_and_get_sub_selection" title="Permalink to this definition"></a></dt>
 <dd><p>Print all the labs in the list to the terminal with the corresponding index. Then waits for the user input to select
@@ -293,18 +278,6 @@ a lab based on the index. Returns the selected lab index to the calling function
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The index of the selected lab</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="interface.actions.remove_extracted">
-<span class="sig-prename descclassname"><span class="pre">interface.actions.</span></span><span class="sig-name descname"><span class="pre">remove_extracted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lab_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/interface/actions.html#remove_extracted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interface.actions.remove_extracted" title="Permalink to this definition"></a></dt>
-<dd><p>Iterates through all student directories under all classes in a lab path and removes all extracted files leaving
-out only the student submitted .tar files and the log file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>lab_path</strong> – Directory path of the lab</p>
 </dd>
 </dl>
 </dd></dl>
