@@ -71,7 +71,7 @@
   <h1>Source code for interface.remote</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">bcolors</span>
 <span class="kn">from</span> <span class="nn">connection.ssh</span> <span class="kn">import</span> <span class="n">Client</span>
@@ -103,7 +103,16 @@
                                        <span class="n">local_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">submission</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="get_log_paths"><a class="viewcode-back" href="../../interface.html#interface.remote.get_log_paths">[docs]</a><span class="k">def</span> <span class="nf">get_log_paths</span><span class="p">(</span><span class="n">ssh_client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">classes</span><span class="p">):</span>
+<div class="viewcode-block" id="get_log_paths"><a class="viewcode-back" href="../../interface.html#interface.remote.get_log_paths">[docs]</a><span class="k">def</span> <span class="nf">get_log_paths</span><span class="p">(</span><span class="n">ssh_client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">term</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prompts the user to select the lab they want to check for updates. Then search lab directory at the SSH client to</span>
+<span class="sd">    find all log files present in the directory and generated a list containing paths to all the identified log files.</span>
+
+<span class="sd">    :param ssh_client: A Client object with a connected SSH session</span>
+<span class="sd">    :param term: From which term these labs should be checked for updates</span>
+<span class="sd">    :param classes: The set of classes the user teaches for that term</span>
+<span class="sd">    :return: A tuple containing the identified log paths and the user selected lab</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">r_all_lab_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/home/cs3331/</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">.work&quot;</span>
     <span class="n">r_avail_labs</span> <span class="o">=</span> <span class="n">ssh_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ls </span><span class="si">{</span><span class="n">r_all_lab_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 

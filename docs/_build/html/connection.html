@@ -135,25 +135,44 @@
 <dt class="sig sig-object py" id="connection.ssh.Client">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">connection.ssh.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="config.html#config.Config" title="config.Config"><span class="pre">Config</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/connection/ssh.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#connection.ssh.Client" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is used to create an SSH connection to the server and store the connection to be used later.
+When the connection is created an SFTP client is also automatically created to transfer files between the server and
+the host.</p>
+<p>Supports both keys and passwords to log into the server. However, using a key is recommended.
+To connect to an SSH server it should already be in the known hosts file. Read the README file for more information.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="connection.ssh.Client.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/connection/ssh.html#Client.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#connection.ssh.Client.close" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/connection/ssh.html#Client.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#connection.ssh.Client.close" title="Permalink to this definition"></a></dt>
+<dd><p>Closes the client and the sftp connection to release resources</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="connection.ssh.Client.download_file">
-<span class="sig-name descname"><span class="pre">download_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_dest</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/connection/ssh.html#Client.download_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#connection.ssh.Client.download_file" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">download_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/connection/ssh.html#Client.download_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#connection.ssh.Client.download_file" title="Permalink to this definition"></a></dt>
+<dd><p>Downloads a single file from the server</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="connection.ssh.Client.download_folder">
-<span class="sig-name descname"><span class="pre">download_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/connection/ssh.html#Client.download_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#connection.ssh.Client.download_folder" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">download_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/connection/ssh.html#Client.download_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#connection.ssh.Client.download_folder" title="Permalink to this definition"></a></dt>
+<dd><p>Paramiko doesn’t support downloading folders. Hence, this function checks whether there are directories in the
+remote_dir and calls itself for each folder to download the content inside.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>remote_dir</strong> – Location of the directory to be downloaded on the server</p></li>
+<li><p><strong>local_dir</strong> – Location where the downloaded directory should be saved</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="connection.ssh.Client.execute">
-<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/connection/ssh.html#Client.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#connection.ssh.Client.execute" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/connection/ssh.html#Client.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#connection.ssh.Client.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Executes the command on the server and retrieves the output. The output is stored in a list where each line of
+the output corresponds to an element in the list.</p>
+</dd></dl>
 
 </dd></dl>
 

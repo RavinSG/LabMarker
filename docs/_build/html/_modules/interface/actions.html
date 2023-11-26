@@ -189,7 +189,16 @@
         <span class="k">return</span> <span class="n">delay_penalty</span></div>
 
 
-<div class="viewcode-block" id="get_submission_times"><a class="viewcode-back" href="../../interface.html#interface.actions.get_submission_times">[docs]</a><span class="k">def</span> <span class="nf">get_submission_times</span><span class="p">(</span><span class="n">available_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">lab_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">print_outputs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="get_submission_times"><a class="viewcode-back" href="../../interface.html#interface.actions.get_submission_times">[docs]</a><span class="k">def</span> <span class="nf">get_submission_times</span><span class="p">(</span><span class="n">available_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">lab_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Iterates through all submissions inside the lab directory and extract the final submission from each submission.</span>
+<span class="sd">    These are stored in a dictionary with the zID as the key and the time as the key. If there is an error with opening</span>
+<span class="sd">    or reading the logfile, this information will be written to the error dict in the above same format.</span>
+
+<span class="sd">    :param available_classes: List of available classes for selected lab</span>
+<span class="sd">    :param lab_path: Absolute file path to the lab folder containing the classes</span>
+<span class="sd">    :return: Two dictionaries containing the submission times and errors</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">submission_times</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">errors</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -212,8 +221,7 @@
                 <span class="n">errors</span><span class="p">[</span><span class="n">student_dir</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;IndexError&quot;</span>
 
             <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">print_outputs</span><span class="p">:</span>
-                    <span class="n">errors</span><span class="p">[</span><span class="n">student_dir</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;FileNotFound&quot;</span>
+                <span class="n">errors</span><span class="p">[</span><span class="n">student_dir</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;FileNotFound&quot;</span>
 
     <span class="k">return</span> <span class="n">submission_times</span><span class="p">,</span> <span class="n">errors</span></div>
 
@@ -236,8 +244,7 @@
     <span class="n">student_num</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="c1"># Extract current deadline information from the config file</span>
     <span class="n">current_deadline</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">penalties</span> <span class="o">=</span> <span class="n">get_deadline_info</span><span class="p">(</span><span class="n">deadline</span><span class="o">=</span><span class="n">deadline</span><span class="p">,</span> <span class="n">assign</span><span class="o">=</span><span class="n">assign</span><span class="p">)</span>
-    <span class="n">submission_times</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">get_submission_times</span><span class="p">(</span><span class="n">available_classes</span><span class="o">=</span><span class="n">available_classes</span><span class="p">,</span> <span class="n">lab_path</span><span class="o">=</span><span class="n">lab_path</span><span class="p">,</span>
-                                                    <span class="n">print_outputs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">submission_times</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">get_submission_times</span><span class="p">(</span><span class="n">available_classes</span><span class="o">=</span><span class="n">available_classes</span><span class="p">,</span> <span class="n">lab_path</span><span class="o">=</span><span class="n">lab_path</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">curr_class</span> <span class="ow">in</span> <span class="n">available_classes</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">curr_class</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
             <span class="k">continue</span>
@@ -409,7 +416,18 @@
                             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">delete_path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="check_new_submissions"><a class="viewcode-back" href="../../interface.html#interface.actions.check_new_submissions">[docs]</a><span class="k">def</span> <span class="nf">check_new_submissions</span><span class="p">(</span><span class="n">ssh_client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">l_labs_path</span><span class="p">):</span>
+<span class="c1"># TODO: Add functionality to download the updated submissions</span>
+<div class="viewcode-block" id="check_new_submissions"><a class="viewcode-back" href="../../interface.html#interface.actions.check_new_submissions">[docs]</a><span class="k">def</span> <span class="nf">check_new_submissions</span><span class="p">(</span><span class="n">ssh_client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">term</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">l_labs_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether there are updated or new submissions since the last download of a lab. If there are, the updated</span>
+<span class="sd">    submissions are printed to the console.</span>
+
+<span class="sd">    :param ssh_client: A Client object with a connected SSH session</span>
+<span class="sd">    :param term: From which term these labs should be checked for updates</span>
+<span class="sd">    :param classes: The set of classes the user teaches for that term</span>
+<span class="sd">    :param l_labs_path: Location of the last download submissions of the lab</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">r_log_paths</span><span class="p">,</span> <span class="n">selected_lab</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">get_log_paths</span><span class="p">(</span><span class="n">ssh_client</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">classes</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;.temp&quot;</span><span class="p">):</span>
