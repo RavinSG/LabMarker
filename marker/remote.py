@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 from config import bcolors
 from connection.ssh import Client
-from interface import utils
+from marker import utils
 
 
 def download_labs_all_classes(ssh_client: Client, term: str, lab_name: str, class_names: List[str],

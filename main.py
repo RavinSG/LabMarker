@@ -1,13 +1,12 @@
 import hydra
 
-from interface.actions import Actions
+from marker.actions import Actions
 from config import Config, bcolors
 
 
 @hydra.main(config_path='.', config_name="config.yaml", version_base=None)
 def main(cfg: Config):
-    client = None
-    marking_actions = Actions(cfg)
+    marker = Actions(cfg)
 
     while True:
         action = input(
@@ -21,26 +20,26 @@ def main(cfg: Config):
 
         action = int(action)
         if action == 1:
-            marking_actions.check_late_submissions()
+            marker.check_late_submissions()
 
         elif action == 2:
-            marking_actions.check_new_submissions()
+            marker.check_new_submissions()
 
         elif action == 3:
-            marking_actions.extract_all_submissions()
+            marker.extract_all_submissions()
 
         elif action == 4:
-            marking_actions.remove_extracted()
+            marker.remove_extracted()
 
         elif action == 5:
-            marking_actions.download_labs()
+            marker.download_labs()
 
         else:
             break
         print("\n\n")
 
-    if client is not None:
-        client.close()
+    marker.close()
+
     return
 
 

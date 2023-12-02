@@ -40,6 +40,7 @@ def get_user_selection(available_options: List[str]) -> str:
 def extract_all(tar_file_path: str, extract_path: str) -> None:
     """
     Recursively extracts all .tar files inside submission.tar and save the output of all extractions in extract_path.
+
     :param tar_file_path: Path to the tar file that should be extracted
     :param extract_path: Save location of the untar content
     """

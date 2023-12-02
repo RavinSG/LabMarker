@@ -9,7 +9,7 @@ from collections import defaultdict
 
 from config import bcolors, Deadline, Config
 from connection.ssh import Client
-from interface import remote, utils
+from marker import remote, utils
 
 
 class Actions:
@@ -124,15 +124,19 @@ class Actions:
         if self.ssh_client is None:
             self.ssh_client = Client(self.cfg)
 
+        # Get the paths of the log files relevant to the classes for the selected lab
         r_log_paths, selected_lab = remote.get_log_paths(self.ssh_client, self.marking.term, self.marking.class_names)
 
         if os.path.exists(".temp"):
             shutil.rmtree(".temp")
         os.makedirs(".temp")
 
+        # Store a mapping of student id to class for future references
         student_to_class = {}
         for r_log_path in r_log_paths:
             class_name, student_id = r_log_path.split("/")[-3:-1]
+
+            # Download and save the log files in a temporary directory
             self.ssh_client.download_file(r_log_path, f".temp/{student_id}")
             student_to_class[student_id] = class_name
 
@@ -148,13 +152,16 @@ class Actions:
         l_log_paths = output.decode().strip().split("\n")
 
         old_sub_times = {}
+
+        # Iterate through log files in the locally downloaded lab and extract last submission times
         for l_log_path in l_log_paths:
             student_id = l_log_path.split("/")[-2]
             old_sub_time = utils.parse_time_from_log(l_log_path)
-
             old_sub_times[student_id] = old_sub_time
 
         updated_submissions = defaultdict(list)
+
+        # Iterate through the new submissions since it has the updated submission list
         for submission in new_sub_time:
             if submission not in old_sub_times:
                 record = {"zID": submission, "desc": "Found New Submission", "time": new_sub_time[submission]}
