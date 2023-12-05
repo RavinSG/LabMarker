@@ -53,6 +53,14 @@ class Config:
     marking: Marking
 
 
+@dataclass
+class RemoteSubmission:
+    zID: str
+    path: str
+    lab: str
+    lab_class: str
+
+
 file_handler = logging.FileHandler('main.log', mode='w')
 file_formatter = logging.Formatter('%(levelname)-8s %(asctime)s:%(name)s:%(message)s')
 file_handler.setFormatter(file_formatter)

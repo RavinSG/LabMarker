@@ -5,9 +5,10 @@ import subprocess
 
 from datetime import datetime
 from collections import defaultdict
+from tqdm import tqdm
 from typing import List, Tuple, Dict, Union
 
-from config import bcolors, Config
+from config import bcolors, Config, RemoteSubmission
 from connection.ssh import Client
 from marker import remote, utils
 
@@ -124,33 +125,36 @@ class Actions:
         if self.ssh_client is None:
             self.ssh_client = Client(self.cfg)
 
-        # Get the paths of the log files relevant to the classes for the selected lab
-        r_log_paths, selected_lab = remote.get_log_paths(self.ssh_client, self.marking.term, self.marking.class_names)
-
         if os.path.exists(".temp"):
             shutil.rmtree(".temp")
         os.makedirs(".temp")
 
-        # Store a mapping of student id to class for future references
-        student_to_class = {}
-        for r_log_path in r_log_paths:
+        # Get the paths of the log files relevant to the classes for the selected lab
+        r_log_paths, selected_lab = remote.get_log_paths(self.ssh_client, self.marking.term, self.marking.class_names)
+
+        # Store a mapping of student id to submission record for future references
+        r_submissions: Dict[str, RemoteSubmission] = {}
+        for r_log_path in tqdm(r_log_paths, desc="Reading remote log files"):
             class_name, student_id = r_log_path.split("/")[-3:-1]
+            r_submission_path = "/".join(r_log_path.split("/")[:-1])
+            r_submission = RemoteSubmission(zID=student_id, path=r_submission_path,
+                                            lab=selected_lab, lab_class=class_name)
 
             # Download and save the log files in a temporary directory
             self.ssh_client.download_file(r_log_path, f".temp/{student_id}")
-            student_to_class[student_id] = class_name
+            r_submissions[student_id] = r_submission
 
         new_sub_time = {}
         for log_file in os.listdir(".temp"):
             last_sub_time = utils.parse_time_from_log(os.path.join(".temp", log_file))
             new_sub_time[log_file] = last_sub_time
 
+        # Local lab path should be a subdirectory inside the all labs directory
         l_selected_lab_path = os.path.join(self.paths.local_labs_path, selected_lab)
         find_str = f"find {l_selected_lab_path} -type f -name log"
 
         output = subprocess.check_output(find_str.split(" "))
         l_log_paths = output.decode().strip().split("\n")
-
         old_sub_times = {}
 
         # Iterate through log files in the locally downloaded lab and extract last submission times
@@ -160,18 +164,27 @@ class Actions:
             old_sub_times[student_id] = old_sub_time
 
         updated_submissions = defaultdict(list)
+        new_sub_count = 0
 
         # Iterate through the new submissions since it has the updated submission list
         for submission in new_sub_time:
             if submission not in old_sub_times:
-                record = {"zID": submission, "desc": "Found New Submission", "time": new_sub_time[submission]}
-                updated_submissions[student_to_class[submission]].append(record)
-
+                desc = "Found New Submission"
             elif old_sub_times[submission] < new_sub_time[submission]:
-                record = {"zID": submission, "desc": "Updated Submission", "time": new_sub_time[submission]}
-                updated_submissions[student_to_class[submission]].append(record)
+                desc = "Updated Submission"
+            else:
+                continue
 
-        print(updated_submissions)
+            record = {"zID": submission, "desc": desc, "time": new_sub_time[submission]}
+            updated_submissions[r_submissions[submission].lab_class].append(record)
+            new_sub_count += 1
+
+        print(f"\nFound {bcolors.FAIL}{new_sub_count}{bcolors.ENDC} new submission(s)")
+
+        for lab_class in updated_submissions.keys():
+            for submission_record in updated_submissions[lab_class]:
+                print(f'{bcolors.OKCYAN}[{lab_class}]{bcolors.ENDC} {submission_record["zID"]} {bcolors.WARNING} '
+                      f'{submission_record["desc"]}{bcolors.ENDC}')
 
     def extract_all_submissions(self) -> None:
         """
