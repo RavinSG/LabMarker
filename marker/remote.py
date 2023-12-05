@@ -32,6 +32,12 @@ def download_labs_all_classes(ssh_client: Client, term: str, lab_name: str, clas
                                        local_dir=os.path.join(save_path, class_name, submission))
 
 
+def download_selected(ssh_client: Client, remote_paths: List[str], local_paths):
+    for r_path, l_path in zip(remote_paths, local_paths):
+        os.makedirs(l_path, exist_ok=True)
+        ssh_client.download_folder(r_path, l_path)
+
+
 def get_log_paths(ssh_client: Client, term: str, classes: List[str]) -> Tuple[List[str], str]:
     """
     Prompts the user to select the lab they want to check for updates. Then search lab directory at the SSH client to

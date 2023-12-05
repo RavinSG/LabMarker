@@ -186,6 +186,19 @@ class Actions:
                 print(f'{bcolors.OKCYAN}[{lab_class}]{bcolors.ENDC} {submission_record["zID"]} {bcolors.WARNING} '
                       f'{submission_record["desc"]}{bcolors.ENDC}')
 
+        download_new = input(
+            f"Do you want to download all updated/new submissions {bcolors.OKBLUE}y/[n]?{bcolors.ENDC}")
+
+        if download_new.lower() == "y":
+            download_list = []
+            for value in updated_submissions.values():
+                download_list += value
+
+            source_paths = [r_submissions[x['zID']].path for x in download_list]
+            destination_paths = [os.path.join(self.paths.local_labs_path, r_submissions[x['zID']].lab,
+                                              r_submissions[x['zID']].lab_class, x['zID']) for x in download_list]
+            remote.download_selected(self.ssh_client, source_paths, destination_paths)
+
     def extract_all_submissions(self) -> None:
         """
         Iterates through all student directories in a lab directory and extracts the content inside the file
