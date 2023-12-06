@@ -56,7 +56,7 @@ class Config:
 @dataclass
 class RemoteSubmission:
     zID: str
-    path: str
+    r_path: str
     lab: str
     lab_class: str
 
