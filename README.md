@@ -14,6 +14,16 @@ dependencies before using the package.
 pip install -r requirements.txt
 ```
 
+## Usage
+
+Currently, there are five main functionalities implemented in the package.
+
+1. Check late submissions 
+2. Check whether there are new/updated submissions after downloading a lab
+3. Extract all submission.tar files
+4. Remove all extracted files and revert the submission to as it was downloaded
+5. Download submissions through SSH from the CSE server 
+
 ## Folder Structure
 The script expects the downloaded submissions to be in the following file structure.
 
@@ -41,14 +51,3 @@ The script expects the downloaded submissions to be in the following file struct
 See below figure for more details. Variable naming in the code also follows the same structure.
 
 ![FileStructure.svg](FileStructure.svg)
-
-
-## Usage
-
-Currently, there are five main functionalities implemented in the package.
-
-1. Check late submissions 
-2. Check whether there are new/updated submissions after downloading a lab
-3. Extract all submission.tar files
-4. Remove all extracted files and revert the submission to as it was downloaded
-5. Download submissions through SSH from the CSE server 
