@@ -32,7 +32,15 @@ def download_labs_all_classes(ssh_client: Client, term: str, lab_name: str, clas
                                        local_dir=os.path.join(save_path, class_name, submission))
 
 
-def download_selected(ssh_client: Client, remote_paths: List[str], local_paths):
+def download_selected(ssh_client: Client, remote_paths: List[str], local_paths: List[str]) -> None:
+    """
+    Download a list of directories from the remote server and save each directory in the corresponding location given in
+    the local_paths list.
+
+    :param ssh_client: A Client object with a connected SSH session
+    :param remote_paths: A list containing the paths of the directories to be downloaded
+    :param local_paths: An equal length list to remote_paths, denoting the save location for each directory
+    """
     for r_path, l_path in zip(remote_paths, local_paths):
         os.makedirs(l_path, exist_ok=True)
         ssh_client.download_folder(r_path, l_path)

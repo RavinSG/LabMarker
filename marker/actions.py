@@ -14,6 +14,10 @@ from marker import remote, utils
 
 
 class Actions:
+    """
+    This class contains the actions a user can execute from the terminal when the program is run.
+    """
+
     def __init__(self, cfg: Config, out_stream=None):
         self.out_stream = out_stream
         self.ssh_client: Union[Client, None] = None
