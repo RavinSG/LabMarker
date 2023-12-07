@@ -11,6 +11,7 @@ from typing import List, Tuple, Dict, Union
 from config import bcolors, Config, RemoteSubmission
 from connection.ssh import Client
 from marker import remote, utils
+from marker import file_handler
 
 
 class Actions:
@@ -70,7 +71,8 @@ class Actions:
                                                                           assign=self.marking.assign)
 
         # Create a dictionary containing the final submission times of the students
-        submission_times, errors = utils.get_submission_times(available_classes=available_classes, lab_path=lab_path)
+        submission_times, errors = file_handler.get_submission_times(available_classes=available_classes,
+                                                                     lab_path=lab_path)
         for curr_class in available_classes:
             if curr_class.startswith("."):
                 continue
@@ -151,7 +153,7 @@ class Actions:
         # Extract the submissions times from the downloaded log files
         new_sub_time = {}
         for log_file in os.listdir(".temp"):
-            last_sub_time = utils.parse_time_from_log(os.path.join(".temp", log_file))
+            last_sub_time = file_handler.parse_time_from_log(os.path.join(".temp", log_file))
             new_sub_time[log_file] = last_sub_time
 
         # Local lab path should be a subdirectory inside the all labs directory
@@ -165,7 +167,7 @@ class Actions:
         # Iterate through log files in the locally downloaded lab and extract last submission times
         for l_log_path in l_log_paths:
             student_id = l_log_path.split("/")[-2]
-            old_sub_time = utils.parse_time_from_log(l_log_path)
+            old_sub_time = file_handler.parse_time_from_log(l_log_path)
             old_sub_times[student_id] = old_sub_time
 
         updated_submissions = defaultdict(list)
@@ -231,7 +233,7 @@ class Actions:
 
                     # Select the submission.tar file inside the student directory
                     if "submission.tar" in submitted_files:
-                        utils.extract_all(os.path.join(dir_path, "submission.tar"), dir_path)
+                        file_handler.extract_all(os.path.join(dir_path, "submission.tar"), dir_path)
 
     def remove_extracted(self) -> None:
         """
@@ -283,6 +285,6 @@ class Actions:
         selected_lab = utils.get_user_selection(avail_labs)
 
         # Before downloading, check whether there is an existing lab downloaded before
-        if utils.check_pre_download_conditions(self.paths.local_labs_path, selected_lab):
+        if file_handler.check_pre_download_conditions(self.paths.local_labs_path, selected_lab):
             remote.download_labs_all_classes(self.ssh_client, self.marking.term, selected_lab, self.marking.class_names,
                                              os.path.join(self.paths.local_labs_path, selected_lab))
