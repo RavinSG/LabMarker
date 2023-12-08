@@ -1,7 +1,6 @@
 import os
 import re
 import shutil
-import subprocess
 
 from datetime import datetime
 from collections import defaultdict
@@ -45,7 +44,7 @@ class Actions:
         """
 
         avail_labs = os.listdir(self.paths.local_labs_path)
-        lab_num = utils.print_and_get_sub_selection(avail_labs)
+        lab_num = utils.print_and_get_sub_selection(lab_names=avail_labs)
 
         lab_path = os.path.join(self.paths.local_labs_path, avail_labs[lab_num])
         avail_classes = os.listdir(lab_path)
@@ -129,14 +128,15 @@ class Actions:
         if self.ssh_client is None:
             self.ssh_client = Client(self.cfg)
 
-        file_handler.clean_dir(".temp")
+        file_handler.clean_dir(dir_path=".temp")
 
         # Get the paths of the log files relevant to the classes for the selected lab
-        r_log_paths, selected_lab = remote.get_log_paths(self.ssh_client, self.marking.term, self.marking.class_names)
+        r_log_paths, selected_lab = remote.get_log_paths(ssh_client=self.ssh_client, term=self.marking.term,
+                                                         classes=self.marking.class_names)
 
         # Download the log files for the selected lab from the remote server
-        r_submissions = remote.download_log_files(
-            ssh_client=self.ssh_client, r_log_paths=r_log_paths, selected_lab=selected_lab)
+        r_submissions = remote.download_log_files(ssh_client=self.ssh_client, r_log_paths=r_log_paths,
+                                                  selected_lab=selected_lab)
 
         # Extract the submissions times from the downloaded log files
         new_sub_time = {}
@@ -165,7 +165,8 @@ class Actions:
                 continue
 
             record = {"zID": submission, "desc": desc, "time": new_sub_time[submission]}
-            updated_submissions[r_submissions[submission].lab_class].append(record)
+            lab_class = r_submissions[submission].lab_class
+            updated_submissions[lab_class].append(record)
             new_sub_count += 1
 
         print(f"\nFound {bcolors.FAIL}{new_sub_count}{bcolors.ENDC} new submission(s)")
@@ -191,7 +192,9 @@ class Actions:
                 # Generate the destination path for each submission based on the folder structure
                 destination_paths = [os.path.join(self.paths.local_labs_path, r_submissions[x['zID']].lab,
                                                   r_submissions[x['zID']].lab_class, x['zID']) for x in download_list]
-                remote.download_selected(self.ssh_client, source_paths, destination_paths)
+
+                remote.download_selected(ssh_client=self.ssh_client, remote_paths=source_paths,
+                                         local_paths=destination_paths)
 
     def extract_all_submissions(self) -> None:
         """
@@ -216,7 +219,8 @@ class Actions:
 
                     # Select the submission.tar file inside the student directory
                     if "submission.tar" in submitted_files:
-                        file_handler.extract_all(os.path.join(dir_path, "submission.tar"), dir_path)
+                        file_handler.extract_all(tar_file_path=os.path.join(dir_path, "submission.tar"),
+                                                 extract_path=dir_path)
 
     def remove_extracted(self) -> None:
         """
@@ -268,6 +272,10 @@ class Actions:
         selected_lab = utils.get_user_selection(avail_labs)
 
         # Before downloading, check whether there is an existing lab downloaded before
-        if file_handler.check_pre_download_conditions(self.paths.local_labs_path, selected_lab):
-            remote.download_labs_all_classes(self.ssh_client, self.marking.term, selected_lab, self.marking.class_names,
-                                             os.path.join(self.paths.local_labs_path, selected_lab))
+        if file_handler.check_pre_download_conditions(destination_path=self.paths.local_labs_path,
+                                                      lab_name=selected_lab):
+            remote.download_labs_all_classes(ssh_client=self.ssh_client,
+                                             term=self.marking.term,
+                                             lab_name=selected_lab,
+                                             class_names=self.marking.class_names,
+                                             save_path=os.path.join(self.paths.local_labs_path, selected_lab))
