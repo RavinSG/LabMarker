@@ -88,6 +88,7 @@
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#W"><strong>W</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -119,13 +120,13 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="marker.html#marker.actions.calculate_late_penalty">calculate_late_penalty() (in module marker.actions)</a>
+      <li><a href="marker.html#marker.utils.calculate_late_penalty">calculate_late_penalty() (in module marker.utils)</a>
 </li>
       <li><a href="marker.html#marker.actions.Actions.check_late_submissions">check_late_submissions() (marker.actions.Actions method)</a>
 </li>
       <li><a href="marker.html#marker.actions.Actions.check_new_submissions">check_new_submissions() (marker.actions.Actions method)</a>
 </li>
-      <li><a href="marker.html#marker.actions.check_pre_download_conditions">check_pre_download_conditions() (in module marker.actions)</a>
+      <li><a href="marker.html#marker.file_handler.check_pre_download_conditions">check_pre_download_conditions() (in module marker.file_handler)</a>
 </li>
       <li><a href="config.html#config.Marking.class_names">class_names (config.Marking attribute)</a>
 </li>
@@ -191,15 +192,17 @@
 </li>
       <li><a href="config.html#config.Marking.deadline">deadline (config.Marking attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="connection.html#connection.ssh.Client.download_file">download_file() (connection.ssh.Client method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="connection.html#connection.ssh.Client.download_folder">download_folder() (connection.ssh.Client method)</a>
 </li>
       <li><a href="marker.html#marker.actions.Actions.download_labs">download_labs() (marker.actions.Actions method)</a>
 </li>
       <li><a href="marker.html#marker.remote.download_labs_all_classes">download_labs_all_classes() (in module marker.remote)</a>
+</li>
+      <li><a href="marker.html#marker.remote.download_selected">download_selected() (in module marker.remote)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -213,7 +216,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="marker.html#marker.utils.extract_all">extract_all() (in module marker.utils)</a>
+      <li><a href="marker.html#marker.file_handler.extract_all">extract_all() (in module marker.file_handler)</a>
 </li>
       <li><a href="marker.html#marker.actions.Actions.extract_all_submissions">extract_all_submissions() (marker.actions.Actions method)</a>
 </li>
@@ -231,7 +234,7 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="marker.html#marker.actions.get_deadline_info">get_deadline_info() (in module marker.actions)</a>
+      <li><a href="marker.html#marker.utils.get_deadline_info">get_deadline_info() (in module marker.utils)</a>
 </li>
       <li><a href="connection.html#connection.dbo.DBO.get_from_submission">get_from_submission() (connection.dbo.DBO method)</a>
 </li>
@@ -239,7 +242,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="marker.html#marker.remote.get_log_paths">get_log_paths() (in module marker.remote)</a>
 </li>
-      <li><a href="marker.html#marker.actions.get_submission_times">get_submission_times() (in module marker.actions)</a>
+      <li><a href="marker.html#marker.file_handler.get_submission_times">get_submission_times() (in module marker.file_handler)</a>
 </li>
       <li><a href="marker.html#marker.utils.get_user_selection">get_user_selection() (in module marker.utils)</a>
 </li>
@@ -269,10 +272,14 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="config.html#config.Deadline.lab_penalties">lab_penalties (config.Deadline attribute)</a>
+      <li><a href="config.html#config.RemoteSubmission.lab">lab (config.RemoteSubmission attribute)</a>
+</li>
+      <li><a href="config.html#config.RemoteSubmission.lab_class">lab_class (config.RemoteSubmission attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="config.html#config.Deadline.lab_penalties">lab_penalties (config.Deadline attribute)</a>
+</li>
       <li><a href="marker.html#marker.actions.Actions.lab_selection">lab_selection() (marker.actions.Actions method)</a>
 </li>
       <li><a href="config.html#config.Paths.local_labs_path">local_labs_path (config.Paths attribute)</a>
@@ -304,6 +311,13 @@
 
       <ul>
         <li><a href="marker.html#module-marker.actions">module</a>
+</li>
+      </ul></li>
+      <li>
+    marker.file_handler
+
+      <ul>
+        <li><a href="marker.html#module-marker.file_handler">module</a>
 </li>
       </ul></li>
       <li>
@@ -344,6 +358,8 @@
 </li>
         <li><a href="marker.html#module-marker.actions">marker.actions</a>
 </li>
+        <li><a href="marker.html#module-marker.file_handler">marker.file_handler</a>
+</li>
         <li><a href="marker.html#module-marker.remote">marker.remote</a>
 </li>
         <li><a href="marker.html#module-marker.utils">marker.utils</a>
@@ -369,7 +385,7 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="marker.html#marker.utils.parse_time_from_log">parse_time_from_log() (in module marker.utils)</a>
+      <li><a href="marker.html#marker.file_handler.parse_time_from_log">parse_time_from_log() (in module marker.file_handler)</a>
 </li>
       <li><a href="config.html#config.Paths">Paths (class in config)</a>
 </li>
@@ -377,7 +393,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="config.html#config.Config.paths">paths (config.Config attribute)</a>
 </li>
-      <li><a href="marker.html#marker.actions.print_and_get_sub_selection">print_and_get_sub_selection() (in module marker.actions)</a>
+      <li><a href="marker.html#marker.utils.print_and_get_sub_selection">print_and_get_sub_selection() (in module marker.utils)</a>
 </li>
       <li><a href="config.html#config.Connection.private_key">private_key (config.Connection attribute)</a>
 </li>
@@ -387,6 +403,12 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="config.html#config.RemoteSubmission.r_path">r_path (config.RemoteSubmission attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="config.html#config.RemoteSubmission">RemoteSubmission (class in config)</a>
+</li>
       <li><a href="marker.html#marker.actions.Actions.remove_extracted">remove_extracted() (marker.actions.Actions method)</a>
 </li>
   </ul></td>
@@ -430,6 +452,14 @@
       <li><a href="marker.html#marker.actions.Actions.write_to_out_stream">write_to_out_stream() (marker.actions.Actions method)</a>
 </li>
       <li><a href="connection.html#connection.dbo.DBO.write_to_submissions">write_to_submissions() (connection.dbo.DBO method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="config.html#config.RemoteSubmission.zID">zID (config.RemoteSubmission attribute)</a>
 </li>
   </ul></td>
 </tr></table>

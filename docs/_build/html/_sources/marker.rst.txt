@@ -12,6 +12,14 @@ marker.actions module
    :undoc-members:
    :show-inheritance:
 
+marker.file\_handler module
+---------------------------
+
+.. automodule:: marker.file_handler
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 marker.remote module
 --------------------
 

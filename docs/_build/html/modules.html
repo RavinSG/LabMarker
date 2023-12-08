@@ -114,6 +114,13 @@
 <li class="toctree-l3"><a class="reference internal" href="config.html#config.Paths.local_labs_path"><code class="docutils literal notranslate"><span class="pre">Paths.local_labs_path</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="config.html#config.RemoteSubmission"><code class="docutils literal notranslate"><span class="pre">RemoteSubmission</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config.html#config.RemoteSubmission.lab"><code class="docutils literal notranslate"><span class="pre">RemoteSubmission.lab</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="config.html#config.RemoteSubmission.lab_class"><code class="docutils literal notranslate"><span class="pre">RemoteSubmission.lab_class</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="config.html#config.RemoteSubmission.r_path"><code class="docutils literal notranslate"><span class="pre">RemoteSubmission.r_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="config.html#config.RemoteSubmission.zID"><code class="docutils literal notranslate"><span class="pre">RemoteSubmission.zID</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="config.html#config.bcolors"><code class="docutils literal notranslate"><span class="pre">bcolors</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="config.html#config.bcolors.BOLD"><code class="docutils literal notranslate"><span class="pre">bcolors.BOLD</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="config.html#config.bcolors.ENDC"><code class="docutils literal notranslate"><span class="pre">bcolors.ENDC</span></code></a></li>
@@ -172,22 +179,26 @@
 <li class="toctree-l4"><a class="reference internal" href="marker.html#marker.actions.Actions.write_to_out_stream"><code class="docutils literal notranslate"><span class="pre">Actions.write_to_out_stream()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.actions.calculate_late_penalty"><code class="docutils literal notranslate"><span class="pre">calculate_late_penalty()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.actions.check_pre_download_conditions"><code class="docutils literal notranslate"><span class="pre">check_pre_download_conditions()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.actions.get_deadline_info"><code class="docutils literal notranslate"><span class="pre">get_deadline_info()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.actions.get_submission_times"><code class="docutils literal notranslate"><span class="pre">get_submission_times()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.actions.print_and_get_sub_selection"><code class="docutils literal notranslate"><span class="pre">print_and_get_sub_selection()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="marker.html#module-marker.file_handler">marker.file_handler module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.file_handler.check_pre_download_conditions"><code class="docutils literal notranslate"><span class="pre">check_pre_download_conditions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.file_handler.extract_all"><code class="docutils literal notranslate"><span class="pre">extract_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.file_handler.get_submission_times"><code class="docutils literal notranslate"><span class="pre">get_submission_times()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.file_handler.parse_time_from_log"><code class="docutils literal notranslate"><span class="pre">parse_time_from_log()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="marker.html#module-marker.remote">marker.remote module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="marker.html#marker.remote.download_labs_all_classes"><code class="docutils literal notranslate"><span class="pre">download_labs_all_classes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.remote.download_selected"><code class="docutils literal notranslate"><span class="pre">download_selected()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="marker.html#marker.remote.get_log_paths"><code class="docutils literal notranslate"><span class="pre">get_log_paths()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="marker.html#module-marker.utils">marker.utils module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.utils.extract_all"><code class="docutils literal notranslate"><span class="pre">extract_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.utils.calculate_late_penalty"><code class="docutils literal notranslate"><span class="pre">calculate_late_penalty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.utils.get_deadline_info"><code class="docutils literal notranslate"><span class="pre">get_deadline_info()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="marker.html#marker.utils.get_user_selection"><code class="docutils literal notranslate"><span class="pre">get_user_selection()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.utils.parse_time_from_log"><code class="docutils literal notranslate"><span class="pre">parse_time_from_log()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="marker.html#marker.utils.print_and_get_sub_selection"><code class="docutils literal notranslate"><span class="pre">print_and_get_sub_selection()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="marker.html#module-marker">Module contents</a></li>

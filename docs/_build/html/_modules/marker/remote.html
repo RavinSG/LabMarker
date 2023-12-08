@@ -103,6 +103,20 @@
                                        <span class="n">local_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">submission</span><span class="p">))</span></div>
 
 
+<div class="viewcode-block" id="download_selected"><a class="viewcode-back" href="../../marker.html#marker.remote.download_selected">[docs]</a><span class="k">def</span> <span class="nf">download_selected</span><span class="p">(</span><span class="n">ssh_client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">remote_paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">local_paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download a list of directories from the remote server and save each directory in the corresponding location given in</span>
+<span class="sd">    the local_paths list.</span>
+
+<span class="sd">    :param ssh_client: A Client object with a connected SSH session</span>
+<span class="sd">    :param remote_paths: A list containing the paths of the directories to be downloaded</span>
+<span class="sd">    :param local_paths: An equal length list to remote_paths, denoting the save location for each directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">r_path</span><span class="p">,</span> <span class="n">l_path</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">remote_paths</span><span class="p">,</span> <span class="n">local_paths</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">l_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ssh_client</span><span class="o">.</span><span class="n">download_folder</span><span class="p">(</span><span class="n">r_path</span><span class="p">,</span> <span class="n">l_path</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="get_log_paths"><a class="viewcode-back" href="../../marker.html#marker.remote.get_log_paths">[docs]</a><span class="k">def</span> <span class="nf">get_log_paths</span><span class="p">(</span><span class="n">ssh_client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">term</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prompts the user to select the lab they want to check for updates. Then search lab directory at the SSH client to</span>
