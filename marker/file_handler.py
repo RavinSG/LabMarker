@@ -144,3 +144,10 @@ def check_pre_download_conditions(destination_path: str, lab_name: str) -> bool:
     else:
         os.mkdir(lab_path)
         return True
+
+
+def clean_dir(dir_path):
+    if os.path.exists(dir_path):
+        shutil.rmtree(dir_path)
+
+    os.makedirs(dir_path)

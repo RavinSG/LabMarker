@@ -1,8 +1,9 @@
 import os
+from pathlib import PurePath
 from tqdm import tqdm
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
-from config import bcolors
+from config import bcolors, RemoteSubmission
 from connection.ssh import Client
 from marker import utils
 
@@ -70,3 +71,23 @@ def get_log_paths(ssh_client: Client, term: str, classes: List[str]) -> Tuple[Li
             r_log_paths += r_class_log_paths
 
     return r_log_paths, selected_lab
+
+
+def download_log_files(ssh_client: Client, r_log_paths: List[str], selected_lab: str) -> Dict[str, RemoteSubmission]:
+    # Store a mapping of student id to submission record for future references
+    r_submissions = {}
+
+    for r_log_path in tqdm(r_log_paths, desc="Reading remote log files"):
+        pure_remote_path = PurePath(r_log_path)
+
+        # Extract the class name and id from the parent directories
+        class_name, student_id = pure_remote_path.parts[-3:-1]
+        r_parent_dir = pure_remote_path.parent.__str__()
+        r_submission = RemoteSubmission(zID=student_id, r_path=r_parent_dir,
+                                        lab=selected_lab, lab_class=class_name)
+
+        # Download and save the log files in a temporary directory
+        ssh_client.download_file(r_log_path, f".temp/{student_id}")
+        r_submissions[student_id] = r_submission
+
+    return r_submissions

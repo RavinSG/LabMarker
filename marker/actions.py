@@ -5,10 +5,9 @@ import subprocess
 
 from datetime import datetime
 from collections import defaultdict
-from tqdm import tqdm
 from typing import List, Tuple, Dict, Union
 
-from config import bcolors, Config, RemoteSubmission
+from config import bcolors, Config
 from connection.ssh import Client
 from marker import remote, utils
 from marker import file_handler
@@ -130,25 +129,14 @@ class Actions:
         if self.ssh_client is None:
             self.ssh_client = Client(self.cfg)
 
-        if os.path.exists(".temp"):
-            shutil.rmtree(".temp")
-        os.makedirs(".temp")
+        file_handler.clean_dir(".temp")
 
         # Get the paths of the log files relevant to the classes for the selected lab
         r_log_paths, selected_lab = remote.get_log_paths(self.ssh_client, self.marking.term, self.marking.class_names)
 
-        # Store a mapping of student id to submission record for future references
-        r_submissions: Dict[str, RemoteSubmission] = {}
-
-        for r_log_path in tqdm(r_log_paths, desc="Reading remote log files"):
-            class_name, student_id = r_log_path.split("/")[-3:-1]
-            r_submission_path = "/".join(r_log_path.split("/")[:-1])
-            r_submission = RemoteSubmission(zID=student_id, r_path=r_submission_path,
-                                            lab=selected_lab, lab_class=class_name)
-
-            # Download and save the log files in a temporary directory
-            self.ssh_client.download_file(r_log_path, f".temp/{student_id}")
-            r_submissions[student_id] = r_submission
+        # Download the log files for the selected lab from the remote server
+        r_submissions = remote.download_log_files(
+            ssh_client=self.ssh_client, r_log_paths=r_log_paths, selected_lab=selected_lab)
 
         # Extract the submissions times from the downloaded log files
         new_sub_time = {}
@@ -158,17 +146,11 @@ class Actions:
 
         # Local lab path should be a subdirectory inside the all labs directory
         l_selected_lab_path = os.path.join(self.paths.local_labs_path, selected_lab)
-        find_str = f"find {l_selected_lab_path} -type f -name log"
+        l_lab_classes = os.listdir(l_selected_lab_path)
 
-        output = subprocess.check_output(find_str.split(" "))
-        l_log_paths = output.decode().strip().split("\n")
-        old_sub_times = {}
-
-        # Iterate through log files in the locally downloaded lab and extract last submission times
-        for l_log_path in l_log_paths:
-            student_id = l_log_path.split("/")[-2]
-            old_sub_time = file_handler.parse_time_from_log(l_log_path)
-            old_sub_times[student_id] = old_sub_time
+        # Get the last submission times from the downloaded lab
+        old_sub_times, _ = file_handler.get_submission_times(available_classes=l_lab_classes,
+                                                             lab_path=l_selected_lab_path)
 
         updated_submissions = defaultdict(list)
         new_sub_count = 0
@@ -192,23 +174,24 @@ class Actions:
         for lab_class in updated_submissions.keys():
             for submission_record in updated_submissions[lab_class]:
                 print(f'{bcolors.OKCYAN}[{lab_class}]{bcolors.ENDC} {submission_record["zID"]} {bcolors.WARNING} '
-                      f'{submission_record["desc"]}{bcolors.ENDC}')
+                      f'{submission_record["desc"]} {submission_record["time"]}{bcolors.ENDC}')
 
-        download_new = input(
-            f"Do you want to download all updated/new submissions {bcolors.OKBLUE}y/[n]?{bcolors.ENDC}")
+        if updated_submissions:
+            download_new = input(
+                f"\nDo you want to download all updated/new submissions {bcolors.OKBLUE}y/[n]?{bcolors.ENDC}")
 
-        if download_new.lower() == "y":
-            download_list = []
+            if download_new.lower() == "y":
+                download_list = []
 
-            # Combine new submissions from all classes to a single list
-            for value in updated_submissions.values():
-                download_list += value
+                # Combine new submissions from all classes to a single list
+                for value in updated_submissions.values():
+                    download_list += value
 
-            source_paths = [r_submissions[x['zID']].r_path for x in download_list]
-            # Generate the destination path for each submission based on the folder structure
-            destination_paths = [os.path.join(self.paths.local_labs_path, r_submissions[x['zID']].lab,
-                                              r_submissions[x['zID']].lab_class, x['zID']) for x in download_list]
-            remote.download_selected(self.ssh_client, source_paths, destination_paths)
+                source_paths = [r_submissions[x['zID']].r_path for x in download_list]
+                # Generate the destination path for each submission based on the folder structure
+                destination_paths = [os.path.join(self.paths.local_labs_path, r_submissions[x['zID']].lab,
+                                                  r_submissions[x['zID']].lab_class, x['zID']) for x in download_list]
+                remote.download_selected(self.ssh_client, source_paths, destination_paths)
 
     def extract_all_submissions(self) -> None:
         """
