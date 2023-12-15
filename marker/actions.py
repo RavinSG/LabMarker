@@ -5,6 +5,7 @@ import shutil
 from datetime import datetime
 from collections import defaultdict
 from typing import List, Tuple, Dict, Union
+from tqdm import tqdm
 
 from config import bcolors, Config
 from connection.ssh import Client
@@ -211,8 +212,10 @@ class Actions:
             if lab_class.startswith("."):
                 continue
             lab_class_path = os.path.join(extract_lab_path, lab_class)
+            lab_classes = tqdm(os.listdir(lab_class_path))
 
-            for dir_path in os.listdir(lab_class_path):
+            for dir_path in lab_classes:
+                lab_classes.set_description(f"Extracting submissions for {lab_class}")
                 dir_path = os.path.join(lab_class_path, dir_path)
                 if os.path.isdir(dir_path):
                     submitted_files = os.listdir(dir_path)
@@ -230,6 +233,8 @@ class Actions:
 
         _, lab_path_to_clear = self.lab_selection()
 
+        print(f"{bcolors.FAIL}Deleting extracted files from submissions{bcolors.ENDC}")
+        file_count = 0
         for lab_class in os.listdir(lab_path_to_clear):
             # Takes care of .DStore files
             if lab_class.startswith("."):
@@ -257,6 +262,7 @@ class Actions:
                                 shutil.rmtree(delete_path)
 
                             else:
+                                file_count += 1
                                 os.remove(delete_path)
 
     def download_labs(self) -> None:
