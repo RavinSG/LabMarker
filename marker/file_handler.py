@@ -142,7 +142,7 @@ def check_pre_download_conditions(destination_path: str, lab_name: str) -> bool:
                 print(f"{bcolors.FAIL}Downloading {lab_name} Aborted!{bcolors.ENDC}")
                 return False
     else:
-        os.mkdir(lab_path)
+        os.makedirs(lab_path)
         return True
 
 
