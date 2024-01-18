@@ -1,7 +1,8 @@
 import os
 
 from config import bcolors
-from ProcessHandler import ProcessHandler
+from marker.auto.ProcessHandler import ProcessHandler
+from marker.utils import print_and_get_sub_selection
 
 
 def find_file(search_folder, file_name):
@@ -111,3 +112,49 @@ def run_individual_submission(submission_path, out_stream):
         return -2
 
     return run_lab_2_code(code_file["folder_path"], code_file["language"], out_stream)
+
+
+def get_error_message(status_no):
+    """
+    Based on the exit status of the program, returns the relevant error message if an error has occurred.
+    """
+
+    error_message = None
+
+    if status_no == -1:
+        error_message = "Process terminated unexpectedly"
+    elif status_no == -2:
+        error_message = "File not found"
+
+    return error_message
+
+
+def mark_submissions_manually(class_path, output_destination):
+    """
+    User can select which submission they want to mark and mark them individually.
+
+    :param class_path: Path of the folder containing all submissions for a single class
+    :param output_destination: Directory where the outputs for each program should be written to
+    :return: None
+    """
+
+    if not os.path.exists(output_destination):
+        os.mkdir(output_destination)
+
+    print(f"{bcolors.OKGREEN}Evaluating labs manually, Please select lab to continue{bcolors.ENDC}\n")
+    class_submissions = os.listdir(class_path)
+
+    while True:
+        lab_num = print_and_get_sub_selection(class_submissions)
+        submission_path = os.path.join(class_path, class_submissions[lab_num])
+        code_output_file = open(f'{output_destination}/{class_submissions[lab_num]}_output.txt', "w")
+
+        print(f"{bcolors.OKGREEN}Running code for submission {class_submissions[lab_num]}....{bcolors.ENDC}")
+
+        status = run_individual_submission(submission_path, code_output_file)
+        if status != 0:
+            print(f"{bcolors.FAIL}{get_error_message(status)}{bcolors.ENDC}")
+        else:
+            print(f"{bcolors.OKGREEN}Done{bcolors.ENDC}\n")
+
+        code_output_file.close()
