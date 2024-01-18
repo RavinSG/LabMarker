@@ -88,3 +88,26 @@ def run_lab_2_code(code_file_dir, code_lang, out_stream, port_num=12000):
     except ChildProcessError:
         # TODO: Add a time check to verify whether the program executed properly
         return 0
+
+
+def run_individual_submission(submission_path, out_stream):
+    """
+    Checks if a file with the name 'PingClient' exists in the given directory or any of the subdirectories. If not
+    present, will return an exit code of -2. Else, based on the execution of the code, the relevant exit code will be
+    returned.
+
+    :param submission_path: Directory to search for the code file
+    :param out_stream: Where the output should be written to
+    :return: Exit code of the program
+    """
+
+    code_file = find_file(submission_path, "PingClient")
+
+    if code_file is None:
+        if out_stream is None:
+            print("File not found")
+        else:
+            out_stream.write("File not found")
+        return -2
+
+    return run_lab_2_code(code_file["folder_path"], code_file["language"], out_stream)
