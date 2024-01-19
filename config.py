@@ -1,5 +1,6 @@
 import colorlog
 import logging
+from enum import Enum
 from typing import List
 from dataclasses import dataclass
 
@@ -59,6 +60,24 @@ class RemoteSubmission:
     r_path: str
     lab: str
     lab_class: str
+
+
+class ExecStatus(Enum):
+    OK = 0
+    UNEXPECTED_TERMINATION = -1
+    FILE_NOT_FOUND = -2
+
+    def __getitem__(self, item):
+        status_descriptions = {
+            0: "Process executed correctly",
+            -1: "Process terminated unexpectedly",
+            -2: "File not found"
+        }
+
+        if item not in status_descriptions.keys():
+            return "Return status not defined"
+
+        return status_descriptions[item]
 
 
 file_handler = logging.FileHandler('main.log', mode='w')
