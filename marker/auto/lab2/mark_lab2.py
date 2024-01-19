@@ -1,4 +1,5 @@
 import os
+from tqdm import tqdm
 
 from config import bcolors, ExecStatus
 from marker.auto.ProcessHandler import ProcessHandler
@@ -124,9 +125,6 @@ def mark_submissions_manually(class_path, output_destination):
     :return: None
     """
 
-    if not os.path.exists(output_destination):
-        os.mkdir(output_destination)
-
     print(f"{bcolors.OKGREEN}Evaluating labs manually, Please select lab to continue{bcolors.ENDC}\n")
     class_submissions = os.listdir(class_path)
 
@@ -144,3 +142,69 @@ def mark_submissions_manually(class_path, output_destination):
             print(f"{bcolors.OKGREEN}Done{bcolors.ENDC}\n")
 
         code_output_file.close()
+
+
+# TODO: Add a method to re-mark failed submissions
+def retry_marking():
+    pass
+
+
+def mark_submissions_auto(class_path, output_destination):
+    """
+
+    :param class_path:
+    :param output_destination:
+    :return:
+    """
+
+    class_submissions = os.listdir(class_path)
+    failed_processes = {}
+
+    for submission in tqdm(class_submissions):
+        if not submission.startswith("."):
+            submission_path = os.path.join(class_path, submission)
+            code_output_file = open(f'{output_destination}/{submission}_output.txt', "w")
+            status = run_individual_submission(submission_path, code_output_file)
+
+            if status.value != 0:
+                failed_processes[submission] = ExecStatus[status.value]
+
+            code_output_file.close()
+
+    print(f"\n{bcolors.WARNING}The following submissions did not execute properly. "
+          f"Would you like to manually mark them?")
+    print(f"{bcolors.OKBLUE}zID \t\t Reason")
+
+    for key, value in failed_processes.items():
+        print(f"{bcolors.OKBLUE}{key} \t {bcolors.FAIL}{value}")
+    print(bcolors.ENDC)
+
+    while True:
+        decision = input("[y]es/[n]o:")
+        if decision == "n":
+            break
+        if decision == "y":
+            retry_marking(class_path, failed_processes)
+            break
+
+
+def mark_lab_2(class_path, output_destination, manual_mode=False):
+    """
+    Iterates through all the directories inside class_path and tries to automatically detect and run the PingClient
+    implementation. If manual mode is enabled, the user can manually select which submissions to be run. The output of
+    the programs run are automatically saved in a separate file for each user inside the output_destination directory.
+
+    :param class_path: Path of the folder containing all submissions for a single class
+    :param output_destination: Directory where the outputs for each program should be written to
+    :param manual_mode: If Ture, user can select which submission to be run, else iterates through all in the directory
+    :return: None
+    """
+
+    if not os.path.exists(output_destination):
+        os.mkdir(output_destination)
+
+    if not manual_mode:
+        mark_submissions_auto(class_path=class_path, output_destination=output_destination)
+
+    else:
+        mark_submissions_manually(class_path=class_path, output_destination=output_destination)
