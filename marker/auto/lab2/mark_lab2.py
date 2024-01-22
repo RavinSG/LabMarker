@@ -144,9 +144,36 @@ def mark_submissions_manually(class_path, output_destination):
         code_output_file.close()
 
 
-# TODO: Add a method to re-mark failed submissions
-def retry_marking():
-    pass
+def retry_marking(submission_path, retry_dict):
+    """
+
+    :param submission_path:
+    :param retry_dict:
+    :return:
+    """
+    retry_submissions = [x for x in retry_dict.keys()]
+
+    while len(retry_submissions) > 0:
+        print(f"\n{bcolors.WARNING}Remaining submissions for remarking")
+        print(f"{bcolors.OKBLUE}zID \t\t Reason")
+
+        for key in retry_submissions:
+            print(f"{bcolors.OKBLUE}{key} \t {bcolors.FAIL}{retry_dict[key]}")
+        print(bcolors.ENDC)
+
+        print(f"{bcolors.OKGREEN}Please select lab to continue{bcolors.ENDC}\n")
+        selected_submission = print_and_get_sub_selection(retry_submissions)
+        submission = retry_submissions[selected_submission]
+        status = run_individual_submission(os.path.join(submission_path, submission), out_stream=None)
+
+        if status.value == 0:
+            print(f"{bcolors.OKGREEN}Detected successful execution, removing submission from retry list{bcolors.ENDC}")
+            retry_submissions.remove(submission)
+
+        else:
+            decision = input("[R]emove, [C]ontinue").lower()
+            if decision == "r":
+                retry_submissions.remove(submission)
 
 
 def mark_submissions_auto(class_path, output_destination):
