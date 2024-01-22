@@ -11,6 +11,7 @@ from config import bcolors, Config
 from connection.ssh import Client
 from marker import remote, utils
 from marker import file_handler
+from marker.auto.lab2.marker import mark_lab_2
 
 
 class Actions:
@@ -285,3 +286,33 @@ class Actions:
                                              lab_name=selected_lab,
                                              class_names=self.marking.class_names,
                                              save_path=os.path.join(self.paths.local_labs_path, selected_lab))
+
+    def mark_lab_2(self):
+
+        avail_classes = None
+
+        while True:
+            lab2_path = os.path.join(self.paths.local_labs_path, 'Lab2')
+
+            if not os.path.exists(lab2_path):
+                user_input = input("Could not find Lab2 directory. [S]elect manually, [D]ownload from server, [Q]uit")
+
+                if user_input.upper() == 'S':
+                    avail_classes, lab2_path = self.lab_selection()
+                    break
+
+                elif user_input.upper() == 'D':
+                    self.download_labs()
+
+            else:
+                break
+
+        if avail_classes is None:
+            avail_classes = [x for x in os.listdir(lab2_path) if not x.startswith('.')]
+
+        for avail_class in avail_classes:
+            print(f"Marking submissions of {avail_class}")
+            out_path = os.path.join(self.paths.auto_outputs_dir, 'lab2', avail_class)
+
+            class_path = os.path.join(lab2_path, avail_class)
+            mark_lab_2(class_path=class_path, output_destination=out_path)

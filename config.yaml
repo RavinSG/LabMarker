@@ -8,17 +8,19 @@ connection:
   use_pass: False
 paths:
   known_hosts: /Users/z5380598/.ssh/known_hosts
-  local_labs_path: /Users/z5380598/UNSW/Tutorial/cs3331/23T3
+  local_labs_path: /Users/z5380598/UNSW/Tutorial/cs3331/24T0
+  auto_outputs_dir: outputs
 marking:
-  term: 23T3
-  class_names: ["thu12-clavier", "thu14-clavier", "thu16-clavier"]
-  assign: True
+  term: 24T0
+  class_names: ["fri10-tabla", "fri12-bongo"]
+  assign: False
   deadline:
-    cur: "2023/11/12 17:00:00"
+    cur: "2024/01/13 00:00:00"
     # This is in minutes, 1440 min = 1 day
-    thresholds: [30, 1440, 2880, 4320, 5760, 7200, 8640, 10080]
+    thresholds: [30, 1500, 2940, 4380, 5840, 7260, 8700, 10080]
     lab_penalties: [0, 5, 10]
     assign_penalties: [0, 5, 10, 15, 20]
+
 
 hydra:
   job:

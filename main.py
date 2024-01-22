@@ -16,6 +16,7 @@ def main(cfg: Config):
             f"[3] Extract all submissions \n \t\t "
             f"[4] Remove extracted \n \t\t "
             f"[5] Download labs through SSH \n \t\t "
+            f"[6] Auto mark Lab 2 (PingClient) \n \t\t "
             f"\n{bcolors.OKBLUE}Action: {bcolors.ENDC}")
 
         action = int(action)
@@ -33,6 +34,9 @@ def main(cfg: Config):
 
         elif action == 5:
             marker.download_labs()
+
+        elif action == 6:
+            marker.mark_lab_2()
 
         else:
             break
