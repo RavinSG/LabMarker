@@ -151,6 +151,7 @@ def retry_marking(submission_path, retry_dict):
     :param retry_dict:
     :return:
     """
+
     retry_submissions = [x for x in retry_dict.keys()]
 
     while len(retry_submissions) > 0:
@@ -228,7 +229,7 @@ def mark_lab_2(class_path, output_destination, manual_mode=False):
     """
 
     if not os.path.exists(output_destination):
-        os.mkdir(output_destination)
+        os.makedirs(output_destination)
 
     if not manual_mode:
         mark_submissions_auto(class_path=class_path, output_destination=output_destination)
