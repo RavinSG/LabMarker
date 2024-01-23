@@ -2,8 +2,8 @@ import os
 from tqdm import tqdm
 
 from config import bcolors, ExecStatus
-from marker.auto.ProcessHandler import ProcessHandler
-from marker.utils import print_and_get_sub_selection
+from lab_marker.auto.ProcessHandler import ProcessHandler
+from lab_marker.utils import print_and_get_sub_selection
 
 
 def find_file(search_folder, file_name):
