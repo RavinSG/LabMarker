@@ -65,15 +65,17 @@ class RemoteSubmission:
 
 class ExecStatus(Enum):
     OK = 0
-    UNEXPECTED_TERMINATION = -1
+    EXECUTION_FAILED = -1
     FILE_NOT_FOUND = -2
+    UNEXPECTED_TERMINATION = -3
 
     @staticmethod
     def get_description(item):
         status_descriptions = {
             0: "Process executed correctly",
-            -1: "Process terminated unexpectedly",
-            -2: "File not found"
+            -1: "Could not execute process",
+            -2: "File not found",
+            -3: "Process terminated unexpectedly"
         }
 
         if item not in status_descriptions.keys():

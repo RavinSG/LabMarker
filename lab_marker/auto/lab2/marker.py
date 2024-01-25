@@ -1,4 +1,5 @@
 import os
+import time
 from tqdm import tqdm
 
 from config import bcolors, ExecStatus
@@ -58,6 +59,8 @@ def run_lab_2_code(code_file_dir, code_lang, out_stream, port_num=12000) -> Exec
         "Java": f"java PingClient localhost {port_num}"
     }
 
+    exec_start_time = time.time()
+
     if code_lang == "Python":
         client = ProcessHandler(process_commands["Python"], out_stream=out_stream, cwd=code_file_dir)
 
@@ -73,7 +76,7 @@ def run_lab_2_code(code_file_dir, code_lang, out_stream, port_num=12000) -> Exec
     # If the client exists before 0.1 seconds, it has probably encountered an error
     client.get_output(timeout=0.1)
     if not client.is_alive:
-        return ExecStatus.UNEXPECTED_TERMINATION
+        return ExecStatus.EXECUTION_FAILED
 
     try:
         count = 0
@@ -86,10 +89,12 @@ def run_lab_2_code(code_file_dir, code_lang, out_stream, port_num=12000) -> Exec
             if count > 300:
                 client.kill_process()
                 # TODO: Change exit code to distinguish between immediate exit vs forced termination
-                return ExecStatus.UNEXPECTED_TERMINATION
+                return ExecStatus.EXECUTION_FAILED
 
     except ChildProcessError:
-        # TODO: Add a time check to verify whether the program executed properly
+        if time.time() - exec_start_time < 2:
+            return ExecStatus.UNEXPECTED_TERMINATION
+
         return ExecStatus.OK
 
 
