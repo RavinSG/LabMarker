@@ -60,7 +60,8 @@ def get_log_paths(ssh_client: Client, term: str, classes: List[str]) -> Tuple[Li
     r_all_lab_path = f"/home/cs3331/{term}.work"
     r_avail_labs = ssh_client.execute(f"ls {r_all_lab_path}")
 
-    selected_lab = utils.get_user_selection(r_avail_labs)
+    selected_lab_num = utils.print_and_get_selection(r_avail_labs)
+    selected_lab = r_avail_labs[selected_lab_num]
     r_lab_path = os.path.join(r_all_lab_path, selected_lab)
 
     r_log_paths = []

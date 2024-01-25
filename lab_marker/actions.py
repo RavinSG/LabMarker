@@ -276,7 +276,8 @@ class Actions:
         list_labs = f"ls /home/cs3331/{self.marking.term}.work"
         # Get the available labs from the CSE server
         avail_labs = self.ssh_client.execute(list_labs)
-        selected_lab = utils.get_user_selection(avail_labs)
+        selected_lab_num = utils.print_and_get_selection(avail_labs)
+        selected_lab = avail_labs[selected_lab_num]
 
         # Before downloading, check whether there is an existing lab downloaded before
         if file_handler.check_pre_download_conditions(destination_path=self.paths.local_labs_path,
@@ -310,9 +311,14 @@ class Actions:
         if avail_classes is None:
             avail_classes = [x for x in os.listdir(lab2_path) if not x.startswith('.')]
 
-        for avail_class in avail_classes:
-            print(f"Marking submissions of {avail_class}")
-            out_path = os.path.join(self.paths.auto_outputs_dir, 'lab2', avail_class)
+        individual = input("Do you want to mark them individually? yes, [N]o")
 
-            class_path = os.path.join(lab2_path, avail_class)
-            mark_lab_2(class_path=class_path, output_destination=out_path)
+        if individual.upper() == 'N':
+            for avail_class in avail_classes:
+                print(f"Marking submissions of {avail_class}")
+                out_path = os.path.join(self.paths.auto_outputs_dir, 'lab2', avail_class)
+
+                class_path = os.path.join(lab2_path, avail_class)
+                mark_lab_2(class_path=class_path, output_destination=out_path)
+        else:
+            utils.print_and_get_selection(avail_classes, selection_type='classes')

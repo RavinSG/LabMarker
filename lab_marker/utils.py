@@ -4,37 +4,6 @@ from config import bcolors, Deadline
 from datetime import datetime, timedelta
 
 
-def get_user_selection(available_options: List[str]) -> str:
-    """
-    Given a list of lab names, print them to the console in a user-friendly format and waits for the user to make a
-    selection. The selection is validated against non-integer and out of range inputs.
-
-    :param available_options: A list of labs
-    :return: Name on the user selected lab
-    """
-
-    print(f"{bcolors.OKCYAN}Available Labs:{bcolors.ENDC}")
-    for i, lab in enumerate(available_options):
-        print(f"{bcolors.OKBLUE}[{i}]{bcolors.ENDC}", lab)
-
-    while True:
-        selected_option = input(
-            f"{bcolors.OKGREEN}\nSelect your lab w/o brackets: {bcolors.ENDC}")
-
-        try:
-            selected_option = int(selected_option)
-        except ValueError:
-            print(f"{bcolors.FAIL}Please enter a valid number{bcolors.ENDC}")
-            continue
-
-        if selected_option >= len(available_options) or selected_option < 0:
-            print(f"{bcolors.FAIL}Lab not found{bcolors.ENDC}")
-        else:
-            break
-
-    return available_options[selected_option]
-
-
 def print_and_get_selection(selection_list: List[str], selection_type="lab") -> int:
     """
     Print all the selections in the list to the terminal with the corresponding index. Then waits for the user input to
@@ -47,6 +16,7 @@ def print_and_get_selection(selection_list: List[str], selection_type="lab") -> 
     """
 
     selection_list.sort()
+    print(f"\n{bcolors.OKCYAN}Available {selection_type.title()}s:{bcolors.ENDC}")
 
     for i, selection in enumerate(selection_list):
         # Ignore folders that are hidden
