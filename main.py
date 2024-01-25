@@ -1,6 +1,6 @@
 import hydra
 
-from marker.actions import Actions
+from lab_marker.actions import Actions
 from config import Config, bcolors
 
 
