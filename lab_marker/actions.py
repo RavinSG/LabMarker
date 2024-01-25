@@ -46,7 +46,7 @@ class Actions:
         """
 
         avail_labs = os.listdir(self.paths.local_labs_path)
-        lab_num = utils.print_and_get_sub_selection(lab_names=avail_labs)
+        lab_num = utils.print_and_get_selection(selection_list=avail_labs)
 
         lab_path = os.path.join(self.paths.local_labs_path, avail_labs[lab_num])
         avail_classes = os.listdir(lab_path)

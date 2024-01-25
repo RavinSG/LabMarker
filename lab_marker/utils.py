@@ -35,35 +35,37 @@ def get_user_selection(available_options: List[str]) -> str:
     return available_options[selected_option]
 
 
-def print_and_get_sub_selection(lab_names: List[str]) -> int:
+def print_and_get_selection(selection_list: List[str], selection_type="lab") -> int:
     """
-    Print all the labs in the list to the terminal with the corresponding index. Then waits for the user input to select
-    a lab based on the index. Returns the selected lab index to the calling function. Performs basic input verification.
+    Print all the selections in the list to the terminal with the corresponding index. Then waits for the user input to
+    make a selection based on the index. Returns the selected index to the calling function. Performs basic input
+    verification.
 
-    :param lab_names: A list of lab names as strings
+    :param selection_list: A list of selection names as strings
+    :param selection_type: The type of selection (lab/class/submission)
     :return: The index of the selected lab
     """
 
-    lab_names.sort()
+    selection_list.sort()
 
-    for i, lab in enumerate(lab_names):
+    for i, selection in enumerate(selection_list):
         # Ignore folders that are hidden
-        if not lab.startswith("."):
-            print(f"{bcolors.OKBLUE}[{i}]{bcolors.ENDC}", lab)
+        if not selection.startswith("."):
+            print(f"{bcolors.OKBLUE}[{i}]{bcolors.ENDC}", selection)
 
     while True:
-        lab_num = input("\nEnter lab number w/o brackets: ")
+        selection_num = input(f"\nEnter {selection_type} number w/o brackets: ")
 
         try:
-            lab_num = int(lab_num)
+            selection_num = int(selection_num)
         except ValueError:
             print(f"{bcolors.FAIL}Please enter a valid number{bcolors.ENDC}")
             continue
 
-        if lab_num >= len(lab_names) or lab_num < 0:
-            print(f"{bcolors.FAIL}Lab not found{bcolors.ENDC}")
+        if selection_num >= len(selection_list) or selection_num < 0:
+            print(f"{bcolors.FAIL}{selection_type.title()} not found{bcolors.ENDC}")
         else:
-            return lab_num
+            return selection_num
 
 
 def get_deadline_info(deadline: Deadline, assign=False) -> Tuple[datetime, List[timedelta], List[int]]:

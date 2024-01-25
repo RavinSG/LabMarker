@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 from config import bcolors, ExecStatus
 from lab_marker.auto.ProcessHandler import ProcessHandler
-from lab_marker.utils import print_and_get_sub_selection
+from lab_marker.utils import print_and_get_selection
 
 
 def find_file(search_folder, file_name):
@@ -129,7 +129,7 @@ def mark_submissions_manually(class_path, output_destination):
     class_submissions = os.listdir(class_path)
 
     while True:
-        lab_num = print_and_get_sub_selection(class_submissions)
+        lab_num = print_and_get_selection(class_submissions)
         submission_path = os.path.join(class_path, class_submissions[lab_num])
         code_output_file = open(f'{output_destination}/{class_submissions[lab_num]}_output.txt', "w")
 
@@ -163,7 +163,7 @@ def retry_marking(submission_path, retry_dict):
         print(bcolors.ENDC)
 
         print(f"{bcolors.OKGREEN}Please select lab to continue{bcolors.ENDC}\n")
-        selected_submission = print_and_get_sub_selection(retry_submissions)
+        selected_submission = print_and_get_selection(retry_submissions)
         submission = retry_submissions[selected_submission]
         status = run_individual_submission(os.path.join(submission_path, submission), out_stream=None)
 
