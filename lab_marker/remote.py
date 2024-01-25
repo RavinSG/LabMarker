@@ -5,7 +5,7 @@ from typing import List, Tuple, Dict
 
 from config import bcolors, RemoteSubmission
 from connection.ssh import Client
-from marker import utils
+from lab_marker import utils
 
 
 def download_labs_all_classes(ssh_client: Client, term: str, lab_name: str, class_names: List[str],

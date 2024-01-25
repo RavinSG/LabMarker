@@ -9,9 +9,9 @@ from tqdm import tqdm
 
 from config import bcolors, Config
 from connection.ssh import Client
-from marker import remote, utils
-from marker import file_handler
-from marker.auto.lab2.marker import mark_lab_2
+from lab_marker import remote, utils
+from lab_marker import file_handler
+from lab_marker.auto.lab2.marker import mark_lab_2
 
 
 class Actions:
