@@ -68,7 +68,8 @@ class ExecStatus(Enum):
     UNEXPECTED_TERMINATION = -1
     FILE_NOT_FOUND = -2
 
-    def __getitem__(self, item):
+    @staticmethod
+    def get_description(item):
         status_descriptions = {
             0: "Process executed correctly",
             -1: "Process terminated unexpectedly",

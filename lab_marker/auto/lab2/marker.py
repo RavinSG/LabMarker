@@ -2,8 +2,8 @@ import os
 from tqdm import tqdm
 
 from config import bcolors, ExecStatus
-from marker.auto.ProcessHandler import ProcessHandler
-from marker.utils import print_and_get_sub_selection
+from lab_marker.auto.ProcessHandler import ProcessHandler
+from lab_marker.utils import print_and_get_sub_selection
 
 
 def find_file(search_folder, file_name):
@@ -137,7 +137,7 @@ def mark_submissions_manually(class_path, output_destination):
 
         status = run_individual_submission(submission_path, code_output_file)
         if status.value != 0:
-            print(f"{bcolors.FAIL}{ExecStatus[status.value]}{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}{ExecStatus.get_description(status.value)}{bcolors.ENDC}")
         else:
             print(f"{bcolors.OKGREEN}Done{bcolors.ENDC}\n")
 
@@ -195,7 +195,7 @@ def mark_submissions_auto(class_path, output_destination):
             status = run_individual_submission(submission_path, code_output_file)
 
             if status.value != 0:
-                failed_processes[submission] = ExecStatus[status.value]
+                failed_processes[submission] = ExecStatus.get_description(status.value)
 
             code_output_file.close()
 
