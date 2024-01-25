@@ -321,4 +321,11 @@ class Actions:
                 class_path = os.path.join(lab2_path, avail_class)
                 mark_lab_2(class_path=class_path, output_destination=out_path)
         else:
-            utils.print_and_get_selection(avail_classes, selection_type='class')
+            class_num = utils.print_and_get_selection(avail_classes, selection_type='class')
+            selected_class = avail_classes[class_num]
+            out_path = os.path.join(self.paths.auto_outputs_dir, 'lab2', selected_class)
+
+            class_path = os.path.join(lab2_path, selected_class)
+            mark_lab_2(class_path=class_path, output_destination=out_path, manual_mode=True)
+
+
