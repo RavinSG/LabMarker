@@ -15,8 +15,19 @@ def print_and_get_selection(selection_list: List[str], selection_type="lab") -> 
     :return: The index of the selected lab
     """
 
+    plural_map = {
+        "lab": "labs",
+        "class": "classes",
+        "submission": "submissions"
+    }
+
+    if selection_type not in plural_map:
+        plural = selection_type
+    else:
+        plural = plural_map[selection_type]
+
     selection_list.sort()
-    print(f"\n{bcolors.OKCYAN}Available {selection_type.title()}s:{bcolors.ENDC}")
+    print(f"\n{bcolors.OKCYAN}Available {plural}:{bcolors.ENDC}")
 
     for i, selection in enumerate(selection_list):
         # Ignore folders that are hidden
