@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lab_marker.auto.lab2.marker &mdash; Lab Marker 0.1.1 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=87f11076"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Lab Marker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Marking_GUI</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Lab Marker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">lab_marker.auto.lab2.marker</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lab_marker.auto.lab2.marker</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">bcolors</span><span class="p">,</span> <span class="n">ExecStatus</span>
+<span class="kn">from</span> <span class="nn">lab_marker.utils</span> <span class="kn">import</span> <span class="n">print_and_get_selection</span>
+<span class="kn">from</span> <span class="nn">lab_marker.auto.StreamHandler</span> <span class="kn">import</span> <span class="n">StreamHandler</span>
+<span class="kn">from</span> <span class="nn">lab_marker.auto.ProcessHandler</span> <span class="kn">import</span> <span class="n">ProcessHandler</span>
+
+
+<div class="viewcode-block" id="find_file"><a class="viewcode-back" href="../../../../lab_marker.auto.lab2.html#lab_marker.auto.lab2.marker.find_file">[docs]</a><span class="k">def</span> <span class="nf">find_file</span><span class="p">(</span><span class="n">search_folder</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursively checks through folders to identify the location of the file with the name &quot;file_name&quot;. Will only search</span>
+<span class="sd">    for files with the extensions .py, .java, and .c. If no file with a matching file name is found, the function will</span>
+<span class="sd">    return None, else the path to the file will be returned.</span>
+
+<span class="sd">    :param search_folder: Path of the top directory to be searched in</span>
+<span class="sd">    :param file_name: Name of the file to be searched, without the extension</span>
+<span class="sd">    :return: Path of the file if found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">current_files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">search_folder</span><span class="p">)</span>
+    <span class="n">lang_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;.py&quot;</span><span class="p">:</span> <span class="s2">&quot;Python&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.java&quot;</span><span class="p">:</span> <span class="s2">&quot;Java&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.c&quot;</span><span class="p">:</span> <span class="s2">&quot;C&quot;</span>
+    <span class="p">}</span>
+    <span class="n">directories</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">current_files</span><span class="p">:</span>
+        <span class="n">current_file_name</span><span class="p">,</span> <span class="n">current_file_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current_file_name</span> <span class="o">==</span> <span class="n">file_name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">current_file_ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;.c&quot;</span><span class="p">,</span> <span class="s2">&quot;.java&quot;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;folder_path&quot;</span><span class="p">:</span> <span class="n">search_folder</span><span class="p">,</span> <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="n">current_file_ext</span><span class="p">,</span> <span class="s2">&quot;language&quot;</span><span class="p">:</span> <span class="n">lang_map</span><span class="p">[</span><span class="n">current_file_ext</span><span class="p">]}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">temp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_folder</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">temp_path</span><span class="p">):</span>
+                <span class="n">directories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_path</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">directories</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="run_lab_2_code"><a class="viewcode-back" href="../../../../lab_marker.auto.lab2.html#lab_marker.auto.lab2.marker.run_lab_2_code">[docs]</a><span class="k">def</span> <span class="nf">run_lab_2_code</span><span class="p">(</span><span class="n">code_file_dir</span><span class="p">,</span> <span class="n">code_lang</span><span class="p">,</span> <span class="n">out_stream</span><span class="p">:</span> <span class="n">StreamHandler</span><span class="p">,</span> <span class="n">port_num</span><span class="o">=</span><span class="mi">12000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExecStatus</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Runs a code file from its directory and writes all the outputs generated by the code to an output stream.</span>
+
+<span class="sd">    :param code_file_dir: The directory the code file is located</span>
+<span class="sd">    :param code_lang: The language the code is written in</span>
+<span class="sd">    :param out_stream: A StreamHandler class object to write the output to</span>
+<span class="sd">    :param port_num: The port PingServer is running on</span>
+<span class="sd">    :return: Exit code of the program</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">process_commands</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Python&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;python PingClient.py localhost </span><span class="si">{</span><span class="n">port_num</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;./PingClient localhost </span><span class="si">{</span><span class="n">port_num</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Java&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;java PingClient localhost </span><span class="si">{</span><span class="n">port_num</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">exec_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">code_lang</span> <span class="o">==</span> <span class="s2">&quot;Python&quot;</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ProcessHandler</span><span class="p">(</span><span class="n">process_commands</span><span class="p">[</span><span class="s2">&quot;Python&quot;</span><span class="p">],</span> <span class="n">out_stream</span><span class="o">=</span><span class="n">out_stream</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">code_file_dir</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">code_lang</span> <span class="o">==</span> <span class="s2">&quot;Java&quot;</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;javac </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">code_file_dir</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;PingClient.java&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ProcessHandler</span><span class="p">(</span><span class="n">process_commands</span><span class="p">[</span><span class="s2">&quot;Java&quot;</span><span class="p">],</span> <span class="n">out_stream</span><span class="o">=</span><span class="n">out_stream</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">code_file_dir</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">WARNING</span><span class="si">}</span><span class="s2">There is no current implementation for C files, skipping evaluation</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">out_stream</span><span class="o">.</span><span class="n">write_message</span><span class="p">(</span><span class="s2">&quot;Code implemented in C, Please check manually!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ExecStatus</span><span class="o">.</span><span class="n">OK</span>
+
+    <span class="c1"># If the client exists before 0.1 seconds, there is an issue with the executed code</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">client</span><span class="o">.</span><span class="n">is_alive</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ExecStatus</span><span class="o">.</span><span class="n">EXECUTION_FAILED</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># Do not wait indefinitely for the client output, after a maximum of 30 seconds, the process will be</span>
+            <span class="c1"># terminated by force.</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">150</span><span class="p">:</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">kill_process</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">ExecStatus</span><span class="o">.</span><span class="n">TIMEOUT</span>
+
+    <span class="k">except</span> <span class="ne">ChildProcessError</span><span class="p">:</span>
+        <span class="c1"># If the client process terminates before 2 seconds have passed, it probably ran into an error during execution</span>
+        <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">exec_start_time</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ExecStatus</span><span class="o">.</span><span class="n">UNEXPECTED_TERMINATION</span>
+
+        <span class="k">return</span> <span class="n">ExecStatus</span><span class="o">.</span><span class="n">OK</span></div>
+
+
+<div class="viewcode-block" id="run_individual_submission"><a class="viewcode-back" href="../../../../lab_marker.auto.lab2.html#lab_marker.auto.lab2.marker.run_individual_submission">[docs]</a><span class="k">def</span> <span class="nf">run_individual_submission</span><span class="p">(</span><span class="n">submission_path</span><span class="p">,</span> <span class="n">out_stream</span><span class="p">:</span> <span class="n">StreamHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExecStatus</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if a file with the name &#39;PingClient&#39; exists in the given directory or any of the subdirectories. If not</span>
+<span class="sd">    present, will return an exit code of -2. Else, based on the execution of the code, the relevant exit code will be</span>
+<span class="sd">    returned.</span>
+
+<span class="sd">    :param submission_path: Directory to search for the code file</span>
+<span class="sd">    :param out_stream: Where the output should be written to</span>
+<span class="sd">    :return: Exit code of the program</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code_file</span> <span class="o">=</span> <span class="n">find_file</span><span class="p">(</span><span class="n">submission_path</span><span class="p">,</span> <span class="s2">&quot;PingClient&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">code_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out_stream</span><span class="o">.</span><span class="n">write_message</span><span class="p">(</span><span class="s2">&quot;File not found&quot;</span><span class="p">,</span> <span class="n">no_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ExecStatus</span><span class="o">.</span><span class="n">FILE_NOT_FOUND</span>
+
+    <span class="k">return</span> <span class="n">run_lab_2_code</span><span class="p">(</span><span class="n">code_file</span><span class="p">[</span><span class="s2">&quot;folder_path&quot;</span><span class="p">],</span> <span class="n">code_file</span><span class="p">[</span><span class="s2">&quot;language&quot;</span><span class="p">],</span> <span class="n">out_stream</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mark_submissions_manually"><a class="viewcode-back" href="../../../../lab_marker.auto.lab2.html#lab_marker.auto.lab2.marker.mark_submissions_manually">[docs]</a><span class="k">def</span> <span class="nf">mark_submissions_manually</span><span class="p">(</span><span class="n">class_path</span><span class="p">,</span> <span class="n">output_destination</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    User can select which submission they want to mark and mark them individually.</span>
+
+<span class="sd">    :param class_path: Path of the folder containing all submissions for a single class</span>
+<span class="sd">    :param output_destination: Directory where the outputs for each program should be written to</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKGREEN</span><span class="si">}</span><span class="s2">Evaluating labs manually, Please select lab to continue</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">class_submissions</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">class_path</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">lab_num</span> <span class="o">=</span> <span class="n">print_and_get_selection</span><span class="p">(</span><span class="n">class_submissions</span><span class="p">)</span>
+        <span class="n">submission_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">class_path</span><span class="p">,</span> <span class="n">class_submissions</span><span class="p">[</span><span class="n">lab_num</span><span class="p">])</span>
+        <span class="n">code_output_stream</span> <span class="o">=</span> <span class="n">StreamHandler</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">output_destination</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">class_submissions</span><span class="p">[</span><span class="n">lab_num</span><span class="p">]</span><span class="si">}</span><span class="s1">_output.txt&#39;</span><span class="p">,</span>
+                                           <span class="n">terminal_out</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKGREEN</span><span class="si">}</span><span class="s2">Running code for submission </span><span class="si">{</span><span class="n">class_submissions</span><span class="p">[</span><span class="n">lab_num</span><span class="p">]</span><span class="si">}</span><span class="s2">....</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="n">run_individual_submission</span><span class="p">(</span><span class="n">submission_path</span><span class="p">,</span> <span class="n">code_output_stream</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">ExecStatus</span><span class="o">.</span><span class="n">get_description</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKGREEN</span><span class="si">}</span><span class="s2">Done</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">code_output_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="retry_marking"><a class="viewcode-back" href="../../../../lab_marker.auto.lab2.html#lab_marker.auto.lab2.marker.retry_marking">[docs]</a><span class="k">def</span> <span class="nf">retry_marking</span><span class="p">(</span><span class="n">submission_path</span><span class="p">,</span> <span class="n">retry_dict</span><span class="p">,</span> <span class="n">output_destination</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    :param submission_path:</span>
+<span class="sd">    :param retry_dict:</span>
+<span class="sd">    :param output_destination:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">retry_submissions</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">retry_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">retry_submissions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">WARNING</span><span class="si">}</span><span class="s2">Remaining submissions for remarking&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">zID </span><span class="se">\t\t</span><span class="s2"> Reason&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">retry_submissions</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">retry_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKGREEN</span><span class="si">}</span><span class="s2">Please select lab to continue</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">selected_submission</span> <span class="o">=</span> <span class="n">print_and_get_selection</span><span class="p">(</span><span class="n">retry_submissions</span><span class="p">)</span>
+        <span class="n">submission</span> <span class="o">=</span> <span class="n">retry_submissions</span><span class="p">[</span><span class="n">selected_submission</span><span class="p">]</span>
+
+        <span class="n">code_output_stream</span> <span class="o">=</span> <span class="n">StreamHandler</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">output_destination</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">submission</span><span class="si">}</span><span class="s1">_output.txt&#39;</span><span class="p">,</span> <span class="n">terminal_out</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">run_individual_submission</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">submission_path</span><span class="p">,</span> <span class="n">submission</span><span class="p">),</span> <span class="n">out_stream</span><span class="o">=</span><span class="n">code_output_stream</span><span class="p">)</span>
+        <span class="n">code_output_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKGREEN</span><span class="si">}</span><span class="s2">Detected successful execution, removing submission from retry list</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">retry_submissions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">submission</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">decision</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;[R]emove, [C]ontinue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">decision</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span>
+                <span class="n">retry_submissions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">submission</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mark_submissions_auto"><a class="viewcode-back" href="../../../../lab_marker.auto.lab2.html#lab_marker.auto.lab2.marker.mark_submissions_auto">[docs]</a><span class="k">def</span> <span class="nf">mark_submissions_auto</span><span class="p">(</span><span class="n">class_path</span><span class="p">,</span> <span class="n">output_destination</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    :param class_path:</span>
+<span class="sd">    :param output_destination:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">class_submissions</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">class_path</span><span class="p">)</span>
+    <span class="n">failed_processes</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">submission</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">class_submissions</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">submission</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+            <span class="n">submission_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">class_path</span><span class="p">,</span> <span class="n">submission</span><span class="p">)</span>
+            <span class="n">code_output_stream</span> <span class="o">=</span> <span class="n">StreamHandler</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">output_destination</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">submission</span><span class="si">}</span><span class="s1">_output.txt&#39;</span><span class="p">)</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">run_individual_submission</span><span class="p">(</span><span class="n">submission_path</span><span class="p">,</span> <span class="n">code_output_stream</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">failed_processes</span><span class="p">[</span><span class="n">submission</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExecStatus</span><span class="o">.</span><span class="n">get_description</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="n">code_output_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">WARNING</span><span class="si">}</span><span class="s2">The following submissions did not execute properly. &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;Would you like to manually mark them?&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">zID </span><span class="se">\t\t</span><span class="s2"> Reason&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">failed_processes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">decision</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;[y]es/[n]o:&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">decision</span> <span class="o">==</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="n">decision</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+            <span class="n">retry_marking</span><span class="p">(</span><span class="n">class_path</span><span class="p">,</span> <span class="n">failed_processes</span><span class="p">,</span> <span class="n">output_destination</span><span class="p">)</span>
+            <span class="k">break</span></div>
+
+
+<div class="viewcode-block" id="mark_lab_2"><a class="viewcode-back" href="../../../../lab_marker.auto.lab2.html#lab_marker.auto.lab2.marker.mark_lab_2">[docs]</a><span class="k">def</span> <span class="nf">mark_lab_2</span><span class="p">(</span><span class="n">class_path</span><span class="p">,</span> <span class="n">output_destination</span><span class="p">,</span> <span class="n">manual_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Iterates through all the directories inside class_path and tries to automatically detect and run the PingClient</span>
+<span class="sd">    implementation. If manual mode is enabled, the user can manually select which submissions to be run. The output of</span>
+<span class="sd">    the programs run are automatically saved in a separate file for each user inside the output_destination directory.</span>
+
+<span class="sd">    :param class_path: Path of the folder containing all submissions for a single class</span>
+<span class="sd">    :param output_destination: Directory where the outputs for each program should be written to</span>
+<span class="sd">    :param manual_mode: If Ture, user can select which submission to be run, else iterates through all in the directory</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_destination</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_destination</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">manual_mode</span><span class="p">:</span>
+        <span class="n">mark_submissions_auto</span><span class="p">(</span><span class="n">class_path</span><span class="o">=</span><span class="n">class_path</span><span class="p">,</span> <span class="n">output_destination</span><span class="o">=</span><span class="n">output_destination</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mark_submissions_manually</span><span class="p">(</span><span class="n">class_path</span><span class="o">=</span><span class="n">class_path</span><span class="p">,</span> <span class="n">output_destination</span><span class="o">=</span><span class="n">output_destination</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ravin Gunawardena.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

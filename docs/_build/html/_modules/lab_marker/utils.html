@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lab_marker.utils &mdash; Lab Marker 0.1.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=87f11076"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Lab Marker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Marking_GUI</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Lab Marker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">lab_marker.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lab_marker.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">bcolors</span><span class="p">,</span> <span class="n">Deadline</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+
+<div class="viewcode-block" id="print_and_get_selection"><a class="viewcode-back" href="../../lab_marker.html#lab_marker.utils.print_and_get_selection">[docs]</a><span class="k">def</span> <span class="nf">print_and_get_selection</span><span class="p">(</span><span class="n">selection_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">selection_type</span><span class="o">=</span><span class="s2">&quot;lab&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print all the selections in the list to the terminal with the corresponding index. Then waits for the user input to</span>
+<span class="sd">    make a selection based on the index. Returns the selected index to the calling function. Performs basic input</span>
+<span class="sd">    verification.</span>
+
+<span class="sd">    :param selection_list: A list of selection names as strings</span>
+<span class="sd">    :param selection_type: The type of selection (lab/class/submission)</span>
+<span class="sd">    :return: The index of the selected lab</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">plural_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;lab&quot;</span><span class="p">:</span> <span class="s2">&quot;labs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;classes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;submission&quot;</span><span class="p">:</span> <span class="s2">&quot;submissions&quot;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">selection_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plural_map</span><span class="p">:</span>
+        <span class="n">plural</span> <span class="o">=</span> <span class="n">selection_type</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plural</span> <span class="o">=</span> <span class="n">plural_map</span><span class="p">[</span><span class="n">selection_type</span><span class="p">]</span>
+
+    <span class="n">selection_list</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKCYAN</span><span class="si">}</span><span class="s2">Available </span><span class="si">{</span><span class="n">plural</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">selection</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selection_list</span><span class="p">):</span>
+        <span class="c1"># Ignore folders that are hidden</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">selection</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">selection_num</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Enter </span><span class="si">{</span><span class="n">selection_type</span><span class="si">}</span><span class="s2"> number w/o brackets: &quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">selection_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">selection_num</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">Please enter a valid number</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">selection_num</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">selection_list</span><span class="p">)</span> <span class="ow">or</span> <span class="n">selection_num</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">selection_type</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2"> not found</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">selection_num</span></div>
+
+
+<div class="viewcode-block" id="get_deadline_info"><a class="viewcode-back" href="../../lab_marker.html#lab_marker.utils.get_deadline_info">[docs]</a><span class="k">def</span> <span class="nf">get_deadline_info</span><span class="p">(</span><span class="n">deadline</span><span class="p">:</span> <span class="n">Deadline</span><span class="p">,</span> <span class="n">assign</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">timedelta</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract the current deadline, thresholds, and penalty values from the config file. The thresholds and penalties</span>
+<span class="sd">    lists can have different number of elements. In such a case the minimum number of elements of both is selected.</span>
+<span class="sd">    eg:</span>
+<span class="sd">        \n\tThreshold: [30, 1440, 2880, 4320, 5760]</span>
+<span class="sd">        \n\tPenalties: [0, 5, 10]</span>
+<span class="sd">    Then the code will consider as there are only 3 penalty brackets.</span>
+
+<span class="sd">    :param deadline: The deadline of the current lab</span>
+<span class="sd">    :param assign: If true, the extended deadline system for assignments will be used</span>
+<span class="sd">    :return: A tuple containing the current deadline, thresholds, and penalty</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">current_deadline</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">deadline</span><span class="o">.</span><span class="n">cur</span><span class="p">,</span> <span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">deadline</span><span class="o">.</span><span class="n">thresholds</span>
+
+    <span class="k">if</span> <span class="n">assign</span><span class="p">:</span>
+        <span class="n">penalties</span> <span class="o">=</span> <span class="n">deadline</span><span class="o">.</span><span class="n">assign_penalties</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">penalties</span> <span class="o">=</span> <span class="n">deadline</span><span class="o">.</span><span class="n">lab_penalties</span>
+
+    <span class="n">num_stages</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">penalties</span><span class="p">)</span>
+
+    <span class="c1"># Convert the threshold values in to timedelta for comparison</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="p">[</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="p">[:</span><span class="n">num_stages</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">current_deadline</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">penalties</span></div>
+
+
+<div class="viewcode-block" id="calculate_late_penalty"><a class="viewcode-back" href="../../lab_marker.html#lab_marker.utils.calculate_late_penalty">[docs]</a><span class="k">def</span> <span class="nf">calculate_late_penalty</span><span class="p">(</span><span class="n">delayed_time</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">timedelta</span><span class="p">],</span> <span class="n">penalties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the late submission penalty that should be added to a student based on how delayed the submission is.</span>
+<span class="sd">    The number of late submission brackets is decided by taking the minimum number of elements available in two lists,</span>
+<span class="sd">    thresholds and penalties.</span>
+
+<span class="sd">    :param delayed_time: How late the submission is from the deadline</span>
+<span class="sd">    :param thresholds: A list containing threshold values for each late submission bracket</span>
+<span class="sd">    :param penalties: A list of penalties for each bracket</span>
+<span class="sd">    :return: The submission penalty as an integer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rejected</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">delay_penalty</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">penalty</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">penalties</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">delayed_time</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">:</span>
+            <span class="n">delay_penalty</span> <span class="o">=</span> <span class="n">penalty</span>
+            <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rejected</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># If the delayed_time is not less than any of the brackets, the submission is rejected</span>
+
+    <span class="k">if</span> <span class="n">rejected</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">delay_penalty</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ravin Gunawardena.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
