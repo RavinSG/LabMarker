@@ -132,9 +132,14 @@ class Actions:
 
         file_handler.clean_dir(dir_path=".temp")
 
+        r_avail_labs = remote.get_available_labs(self.ssh_client, self.cfg.paths.remote_path, self.marking.term)
+        selected_lab_num = utils.print_and_get_selection(r_avail_labs)
+        selected_lab = r_avail_labs[selected_lab_num]
+        r_lab_path = os.path.join(self.cfg.paths.remote_path, f"{self.marking.term}.work", selected_lab)
+
         # Get the paths of the log files relevant to the classes for the selected lab
-        r_log_paths, selected_lab = remote.get_log_paths(ssh_client=self.ssh_client, term=self.marking.term,
-                                                         classes=self.marking.class_names)
+        r_log_paths = remote.get_log_paths(ssh_client=self.ssh_client, lab_path=r_lab_path,
+                                           classes=self.marking.class_names)
 
         # Download the log files for the selected lab from the remote server
         r_submissions = remote.download_log_files(ssh_client=self.ssh_client, r_log_paths=r_log_paths,
@@ -273,9 +278,9 @@ class Actions:
         if self.ssh_client is None:
             self.ssh_client = Client(self.cfg)
 
-        list_labs = f"ls /home/cs3331/{self.marking.term}.work"
-        # Get the available labs from the CSE server
-        avail_labs = self.ssh_client.execute(list_labs)
+        avail_labs = remote.get_available_labs(ssh_client=self.ssh_client, remote_path=self.paths.remote_path,
+                                               term=self.marking.term)
+
         selected_lab_num = utils.print_and_get_selection(avail_labs)
         selected_lab = avail_labs[selected_lab_num]
 

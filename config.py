@@ -29,6 +29,7 @@ class Connection:
 class Paths:
     known_hosts: str
     local_labs_path: str
+    remote_path: str
     auto_outputs_dir: str
 
 
