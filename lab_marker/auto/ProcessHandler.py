@@ -1,9 +1,10 @@
-import io
 import pexpect
+
+from lab_marker.auto.StreamHandler import StreamHandler
 
 
 class ProcessHandler:
-    def __init__(self, process_name, out_stream: io.TextIOWrapper = None, cwd=None):
+    def __init__(self, process_name, out_stream: StreamHandler, cwd=None):
         if cwd is None:
             self.process = pexpect.spawn(process_name)
         else:
@@ -12,10 +13,7 @@ class ProcessHandler:
         self.out_stream = out_stream
 
     def write_to_out_stream(self, message):
-        if self.out_stream is None:
-            print(message)
-        else:
-            self.out_stream.write(message)
+        self.out_stream.write_message(message)
 
     def get_output(self, timeout=0.1):
         if not self.is_alive:

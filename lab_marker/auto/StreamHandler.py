@@ -1,5 +1,5 @@
 class StreamHandler:
-    def __init__(self, file_name=None, open_mode='w', terminal_out=True):
+    def __init__(self, file_name=None, open_mode='w', terminal_out=False):
         if file_name is not None:
             self.file = open(file_name, open_mode)
         else:
