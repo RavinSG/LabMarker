@@ -151,7 +151,7 @@ class Actions:
             last_sub_time = file_handler.parse_time_from_log(os.path.join(".temp", log_file))
             new_sub_time[log_file] = last_sub_time
 
-        # Local lab path should be a subdirectory inside the all labs directory
+        # Selected lab should be a subdirectory inside the all labs directory
         l_selected_lab_path = os.path.join(self.paths.local_labs_path, selected_lab)
         l_lab_classes = os.listdir(l_selected_lab_path)
 
@@ -293,7 +293,12 @@ class Actions:
                                              class_names=self.marking.class_names,
                                              save_path=os.path.join(self.paths.local_labs_path, selected_lab))
 
-    def mark_lab_2(self):
+    def mark_lab_2(self) -> None:
+        """
+        Automatically runs the PingClient programs included in the submissions. Expects the PingSever to be up and
+        running on port 12000. (TODO: Add ability to be changed via the config file.)
+        This function is currently only implemented for Python and Java programs. (TODO: Implement for C)
+        """
 
         avail_classes = None
 
