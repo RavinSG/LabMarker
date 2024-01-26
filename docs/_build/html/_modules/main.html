@@ -71,13 +71,13 @@
   <h1>Source code for main</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">hydra</span>
 
-<span class="kn">from</span> <span class="nn">marker.actions</span> <span class="kn">import</span> <span class="n">Actions</span>
+<span class="kn">from</span> <span class="nn">lab_marker.actions</span> <span class="kn">import</span> <span class="n">Actions</span>
 <span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">bcolors</span>
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../main.html#main.main">[docs]</a><span class="nd">@hydra</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">,</span> <span class="n">version_base</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Config</span><span class="p">):</span>
-    <span class="n">marker</span> <span class="o">=</span> <span class="n">Actions</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">Actions</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
 
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">action</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
@@ -87,29 +87,33 @@
             <span class="sa">f</span><span class="s2">&quot;[3] Extract all submissions </span><span class="se">\n</span><span class="s2"> </span><span class="se">\t\t</span><span class="s2"> &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;[4] Remove extracted </span><span class="se">\n</span><span class="s2"> </span><span class="se">\t\t</span><span class="s2"> &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;[5] Download labs through SSH </span><span class="se">\n</span><span class="s2"> </span><span class="se">\t\t</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;[6] Auto mark Lab 2 (PingClient) </span><span class="se">\n</span><span class="s2"> </span><span class="se">\t\t</span><span class="s2"> &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">Action: </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">action</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">marker</span><span class="o">.</span><span class="n">check_late_submissions</span><span class="p">()</span>
+            <span class="n">actions</span><span class="o">.</span><span class="n">check_late_submissions</span><span class="p">()</span>
 
         <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">marker</span><span class="o">.</span><span class="n">check_new_submissions</span><span class="p">()</span>
+            <span class="n">actions</span><span class="o">.</span><span class="n">check_new_submissions</span><span class="p">()</span>
 
         <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">marker</span><span class="o">.</span><span class="n">extract_all_submissions</span><span class="p">()</span>
+            <span class="n">actions</span><span class="o">.</span><span class="n">extract_all_submissions</span><span class="p">()</span>
 
         <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-            <span class="n">marker</span><span class="o">.</span><span class="n">remove_extracted</span><span class="p">()</span>
+            <span class="n">actions</span><span class="o">.</span><span class="n">remove_extracted</span><span class="p">()</span>
 
         <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
-            <span class="n">marker</span><span class="o">.</span><span class="n">download_labs</span><span class="p">()</span>
+            <span class="n">actions</span><span class="o">.</span><span class="n">download_labs</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="n">actions</span><span class="o">.</span><span class="n">mark_lab_2</span><span class="p">()</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">break</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">marker</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">actions</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">return</span></div>
 

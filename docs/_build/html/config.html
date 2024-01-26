@@ -66,6 +66,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#config.Deadline.thresholds"><code class="docutils literal notranslate"><span class="pre">Deadline.thresholds</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#config.ExecStatus"><code class="docutils literal notranslate"><span class="pre">ExecStatus</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#config.ExecStatus.EXECUTION_FAILED"><code class="docutils literal notranslate"><span class="pre">ExecStatus.EXECUTION_FAILED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.ExecStatus.FILE_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">ExecStatus.FILE_NOT_FOUND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.ExecStatus.OK"><code class="docutils literal notranslate"><span class="pre">ExecStatus.OK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.ExecStatus.TIMEOUT"><code class="docutils literal notranslate"><span class="pre">ExecStatus.TIMEOUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.ExecStatus.UNEXPECTED_TERMINATION"><code class="docutils literal notranslate"><span class="pre">ExecStatus.UNEXPECTED_TERMINATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.ExecStatus.get_description"><code class="docutils literal notranslate"><span class="pre">ExecStatus.get_description()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#config.Marking"><code class="docutils literal notranslate"><span class="pre">Marking</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#config.Marking.assign"><code class="docutils literal notranslate"><span class="pre">Marking.assign</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#config.Marking.class_names"><code class="docutils literal notranslate"><span class="pre">Marking.class_names</span></code></a></li>
@@ -74,8 +83,10 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#config.Paths"><code class="docutils literal notranslate"><span class="pre">Paths</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#config.Paths.auto_outputs_dir"><code class="docutils literal notranslate"><span class="pre">Paths.auto_outputs_dir</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#config.Paths.known_hosts"><code class="docutils literal notranslate"><span class="pre">Paths.known_hosts</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#config.Paths.local_labs_path"><code class="docutils literal notranslate"><span class="pre">Paths.local_labs_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config.Paths.remote_path"><code class="docutils literal notranslate"><span class="pre">Paths.remote_path</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#config.RemoteSubmission"><code class="docutils literal notranslate"><span class="pre">RemoteSubmission</span></code></a><ul>
@@ -100,8 +111,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="connection.html">connection package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab_marker.html">lab_marker package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="marker.html">marker package</a></li>
 </ul>
 </li>
 </ul>
@@ -207,6 +218,43 @@
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="config.ExecStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">ExecStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#ExecStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.ExecStatus" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.ExecStatus.EXECUTION_FAILED">
+<span class="sig-name descname"><span class="pre">EXECUTION_FAILED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#config.ExecStatus.EXECUTION_FAILED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.ExecStatus.FILE_NOT_FOUND">
+<span class="sig-name descname"><span class="pre">FILE_NOT_FOUND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-2</span></em><a class="headerlink" href="#config.ExecStatus.FILE_NOT_FOUND" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.ExecStatus.OK">
+<span class="sig-name descname"><span class="pre">OK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#config.ExecStatus.OK" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.ExecStatus.TIMEOUT">
+<span class="sig-name descname"><span class="pre">TIMEOUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-4</span></em><a class="headerlink" href="#config.ExecStatus.TIMEOUT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.ExecStatus.UNEXPECTED_TERMINATION">
+<span class="sig-name descname"><span class="pre">UNEXPECTED_TERMINATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-3</span></em><a class="headerlink" href="#config.ExecStatus.UNEXPECTED_TERMINATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="config.ExecStatus.get_description">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#ExecStatus.get_description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.ExecStatus.get_description" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="config.Marking">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">Marking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#config.Deadline" title="config.Deadline"><span class="pre">config.Deadline</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#Marking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.Marking" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -234,8 +282,13 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="config.Paths">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">Paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">known_hosts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_labs_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#Paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.Paths" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">Paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">known_hosts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_labs_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_outputs_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#Paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.Paths" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Paths.auto_outputs_dir">
+<span class="sig-name descname"><span class="pre">auto_outputs_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Paths.auto_outputs_dir" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="config.Paths.known_hosts">
 <span class="sig-name descname"><span class="pre">known_hosts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Paths.known_hosts" title="Permalink to this definition"></a></dt>
@@ -244,6 +297,11 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="config.Paths.local_labs_path">
 <span class="sig-name descname"><span class="pre">local_labs_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Paths.local_labs_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="config.Paths.remote_path">
+<span class="sig-name descname"><span class="pre">remote_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#config.Paths.remote_path" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

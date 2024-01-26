@@ -74,7 +74,7 @@ def run_lab_2_code(code_file_dir, code_lang, out_stream: StreamHandler, port_num
         out_stream.write_message("Code implemented in C, Please check manually!")
         return ExecStatus.OK
 
-    # If the client exists before 0.1 seconds, it has probably encountered an error
+    # If the client exists before 0.1 seconds, there is an issue with the executed code
     client.get_output(timeout=0.1)
     if not client.is_alive:
         return ExecStatus.EXECUTION_FAILED
@@ -92,6 +92,7 @@ def run_lab_2_code(code_file_dir, code_lang, out_stream: StreamHandler, port_num
                 return ExecStatus.TIMEOUT
 
     except ChildProcessError:
+        # If the client process terminates before 2 seconds have passed, it probably ran into an error during execution
         if time.time() - exec_start_time < 2:
             return ExecStatus.UNEXPECTED_TERMINATION
 
@@ -112,7 +113,7 @@ def run_individual_submission(submission_path, out_stream: StreamHandler) -> Exe
     code_file = find_file(submission_path, "PingClient")
 
     if code_file is None:
-        out_stream.write_message("File not found")
+        out_stream.write_message("File not found", no_print=True)
         return ExecStatus.FILE_NOT_FOUND
 
     return run_lab_2_code(code_file["folder_path"], code_file["language"], out_stream)

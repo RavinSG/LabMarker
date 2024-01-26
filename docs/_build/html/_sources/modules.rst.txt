@@ -6,5 +6,5 @@ Marking_GUI
 
    config
    connection
+   lab_marker
    main
-   marker
