@@ -87,10 +87,9 @@ def run_lab_2_code(code_file_dir, code_lang, out_stream: StreamHandler, port_num
 
             # Do not wait indefinitely for the client output, after a maximum of 30 seconds, the process will be
             # terminated by force.
-            if count > 300:
+            if count > 150:
                 client.kill_process()
-                # TODO: Change exit code to distinguish between immediate exit vs forced termination
-                return ExecStatus.EXECUTION_FAILED
+                return ExecStatus.TIMEOUT
 
     except ChildProcessError:
         if time.time() - exec_start_time < 2:

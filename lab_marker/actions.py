@@ -313,14 +313,7 @@ class Actions:
 
         individual = input("Do you want to mark them individually? yes, [N]o")
 
-        if individual.upper() == 'N':
-            for avail_class in avail_classes:
-                print(f"Marking submissions of {avail_class}")
-                out_path = os.path.join(self.paths.auto_outputs_dir, 'lab2', avail_class)
-
-                class_path = os.path.join(lab2_path, avail_class)
-                mark_lab_2(class_path=class_path, output_destination=out_path)
-        else:
+        if individual.upper() == 'Y':
             class_num = utils.print_and_get_selection(avail_classes, selection_type='class')
             selected_class = avail_classes[class_num]
             out_path = os.path.join(self.paths.auto_outputs_dir, 'lab2', selected_class)
@@ -328,4 +321,10 @@ class Actions:
             class_path = os.path.join(lab2_path, selected_class)
             mark_lab_2(class_path=class_path, output_destination=out_path, manual_mode=True)
 
+        else:
+            for avail_class in avail_classes:
+                print(f"Marking submissions of {avail_class}")
+                out_path = os.path.join(self.paths.auto_outputs_dir, 'lab2', avail_class)
 
+                class_path = os.path.join(lab2_path, avail_class)
+                mark_lab_2(class_path=class_path, output_destination=out_path)

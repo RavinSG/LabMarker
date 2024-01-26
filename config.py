@@ -68,6 +68,7 @@ class ExecStatus(Enum):
     EXECUTION_FAILED = -1
     FILE_NOT_FOUND = -2
     UNEXPECTED_TERMINATION = -3
+    TIMEOUT = -4
 
     @staticmethod
     def get_description(item):
@@ -75,7 +76,8 @@ class ExecStatus(Enum):
             0: "Process executed correctly",
             -1: "Could not execute process",
             -2: "File not found",
-            -3: "Process terminated unexpectedly"
+            -3: "Process terminated unexpectedly",
+            -4: "Process timed out during execution"
         }
 
         if item not in status_descriptions.keys():
