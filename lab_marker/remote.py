@@ -1,11 +1,10 @@
 import os
 from pathlib import PurePath
 from tqdm import tqdm
-from typing import List, Tuple, Dict
+from typing import List, Dict
 
 from config import bcolors, RemoteSubmission
 from connection.ssh import Client
-from lab_marker import utils
 
 
 def get_available_labs(ssh_client: Client, remote_path: str, term: str):
