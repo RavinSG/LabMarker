@@ -34,12 +34,16 @@ def download_labs_all_classes(ssh_client: Client, term: str, lab_name: str, clas
         ssh_lab_path = f"/home/cs3331/{term}.work/{lab_name}/{class_name}/"
         avail_submissions = ssh_client.execute(f"ls {ssh_lab_path}")
 
-        for submission in tqdm(avail_submissions):
-            os.makedirs(os.path.join(save_path, class_name, submission), exist_ok=True)
+        if avail_submissions is not None:
+            for submission in tqdm(avail_submissions):
+                os.makedirs(os.path.join(save_path, class_name, submission), exist_ok=True)
 
-            # Download all contents inside the folder, including subdirectories
-            ssh_client.download_folder(remote_dir=os.path.join(ssh_lab_path, submission),
-                                       local_dir=os.path.join(save_path, class_name, submission))
+                # Download all contents inside the folder, including subdirectories
+                ssh_client.download_folder(remote_dir=os.path.join(ssh_lab_path, submission),
+                                           local_dir=os.path.join(save_path, class_name, submission))
+
+        else:
+            print(f"{bcolors.WARNING}There are no submissions available for {lab_name}{bcolors.ENDC}")
 
 
 def download_selected(ssh_client: Client, remote_paths: List[str], local_paths: List[str]) -> None:

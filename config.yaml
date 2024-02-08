@@ -16,12 +16,14 @@ marking:
   class_names: ["fri10-tabla", "fri12-bongo"]
   assign: False
   deadline:
-    cur: "2024/01/22 12:00:00"
+    cur: "2024/02/03 00:00:00"
     # This is in minutes, 1440 min = 1 day
-    thresholds: [30, 1500, 2940, 4380, 5840, 7260, 8700, 10080]
-    lab_penalties: [0, 5, 10]
-    assign_penalties: [0, 5, 10, 15, 20]
-
+    thresholds: [180, 1500, 2940, 4380, 5840, 7260, 8700, 10080]
+    lab_penalties: [0, 5, 10, 15]
+    assign_penalties: [0, 5, 10, 15]
+  auto:
+    lab2:
+      port_num: 12000
 
 hydra:
   job:
