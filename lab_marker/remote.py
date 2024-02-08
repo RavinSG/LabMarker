@@ -1,7 +1,8 @@
 import os
-from pathlib import PurePath
-from tqdm import tqdm
+from pathlib import PurePath, Path
 from typing import List, Dict
+
+from tqdm import tqdm
 
 from config import bcolors, RemoteSubmission
 from connection.ssh import Client
@@ -50,9 +51,14 @@ def download_selected(ssh_client: Client, remote_paths: List[str], local_paths: 
     :param remote_paths: A list containing the paths of the directories to be downloaded
     :param local_paths: An equal length list to remote_paths, denoting the save location for each directory
     """
-    for r_path, l_path in zip(remote_paths, local_paths):
+    progress_bar = tqdm(zip(remote_paths, local_paths), bar_format='{desc} {elapsed}<{remaining}')
+    progress_bar.set_description("Starting download")
+
+    for r_path, l_path in progress_bar:
+        class_name, z_id = Path(r_path).parts[-2:]
         os.makedirs(l_path, exist_ok=True)
         ssh_client.download_folder(r_path, l_path)
+        progress_bar.set_description(f"Downloading submission {z_id} from {class_name}")
 
 
 def get_log_paths(ssh_client: Client, lab_path: str, classes: List[str]) -> List[str]:
