@@ -6,6 +6,9 @@ The default port number used is `12000`, if you want to change this it can be fo
 ### Running the auto marker
 Run the ping server on the same port you selected above and execute the LabMarker script and select the option `[6] Auto mark Lab 2 (PingClient)`. You will be then prompted with the following:
 
+> [!IMPORTANT]
+> Currently the functionality to mark PingClients written in C is not implemented. You will have to manually mark them.
+
 ![marking_mode.png](../../../images/marking_mode.png)
 
 ### Selecting marking mode
