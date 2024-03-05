@@ -1,7 +1,6 @@
 import os
 import shutil
 import tarfile
-
 from datetime import datetime
 from typing import List, Dict, Tuple
 
@@ -32,6 +31,8 @@ def extract_all(tar_file_path: str, extract_path: str) -> None:
         print(tar_file_path, "failed")
     except EOFError:
         print(tar_file_path, "Cannot untar the file")
+    except IsADirectoryError:
+        print(tar_file_path, "File is a directory")
 
 
 def parse_time_from_log(log_path: str) -> datetime:

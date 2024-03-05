@@ -321,7 +321,7 @@ class Actions:
         if avail_classes is None:
             avail_classes = [x for x in os.listdir(lab2_path) if not x.startswith('.')]
 
-        individual = input("Do you want to mark them individually? yes, [N]o")
+        individual = input("Do you want to mark them individually? [Y]es, [N]o")
 
         if individual.upper() == 'Y':
             class_num = utils.print_and_get_selection(avail_classes, selection_type='class')

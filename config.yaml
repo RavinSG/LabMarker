@@ -8,12 +8,12 @@ connection:
   use_pass: False
 paths:
   known_hosts: /Users/z5380598/.ssh/known_hosts
-  local_labs_path: /Users/z5380598/UNSW/Tutorial/cs3331/24T0
+  local_labs_path: /Users/z5380598/UNSW/Tutorial/cs3331/24T1
   remote_path: /home/cs3331/
   auto_outputs_dir: outputs
 marking:
-  term: 24T0
-  class_names: ["fri10-tabla", "fri12-bongo"]
+  term: 24T1
+  class_names: ["thu11-organ", "thu13-organ", "thu15-bass"]
   assign: False
   deadline:
     cur: "2024/02/03 00:00:00"
