@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lab_marker.actions &mdash; Lab Marker 0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=a58bc63e"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Lab Marker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Marking_GUI</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Lab Marker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">lab_marker.actions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lab_marker.actions</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">bcolors</span><span class="p">,</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">connection.ssh</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">lab_marker</span> <span class="kn">import</span> <span class="n">remote</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">lab_marker</span> <span class="kn">import</span> <span class="n">file_handler</span>
+<span class="kn">from</span> <span class="nn">lab_marker.auto.lab2.marker</span> <span class="kn">import</span> <span class="n">mark_lab_2</span>
+
+
+<div class="viewcode-block" id="Actions">
+<a class="viewcode-back" href="../../lab_marker.html#lab_marker.actions.Actions">[docs]</a>
+<span class="k">class</span> <span class="nc">Actions</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains the actions a user can execute from the terminal when the program is run.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">out_stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_stream</span> <span class="o">=</span> <span class="n">out_stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Client</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">paths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">marking</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">marking</span>
+
+<div class="viewcode-block" id="Actions.write_to_out_stream">
+<a class="viewcode-back" href="../../lab_marker.html#lab_marker.actions.Actions.write_to_out_stream">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_to_out_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_stream</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Actions.close">
+<a class="viewcode-back" href="../../lab_marker.html#lab_marker.actions.Actions.close">[docs]</a>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Actions.lab_selection">
+<a class="viewcode-back" href="../../lab_marker.html#lab_marker.actions.Actions.lab_selection">[docs]</a>
+    <span class="k">def</span> <span class="nf">lab_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lists down all available labs in the local download path and prompts the user to pick a specific lab number.</span>
+<span class="sd">        If the input lab number is present, returns all class names under the given lab and their respective directory</span>
+<span class="sd">        paths</span>
+
+<span class="sd">        :return: The available class names (eg: &#39;fri09-oboe&#39;) in the lab and the path of the lab directory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">avail_labs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">local_labs_path</span><span class="p">)</span>
+        <span class="n">lab_num</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">print_and_get_selection</span><span class="p">(</span><span class="n">selection_list</span><span class="o">=</span><span class="n">avail_labs</span><span class="p">)</span>
+
+        <span class="n">lab_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">local_labs_path</span><span class="p">,</span> <span class="n">avail_labs</span><span class="p">[</span><span class="n">lab_num</span><span class="p">])</span>
+        <span class="n">avail_classes</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">lab_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">avail_classes</span><span class="p">,</span> <span class="n">lab_path</span></div>
+
+
+<div class="viewcode-block" id="Actions.check_late_submissions">
+<a class="viewcode-back" href="../../lab_marker.html#lab_marker.actions.Actions.check_late_submissions">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_late_submissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prompts the user to select a lab from the downloaded labs. After selecting a lab, uses the available classes</span>
+<span class="sd">        for that lab and the lab path to check the time of the last submission for each student. Opens the log file of</span>
+<span class="sd">        each submission and reads the final line to get the last submitted time. Then compares this value with the</span>
+<span class="sd">        curr_deadline. If the deadline is exceeded, based on the delayed time calculates the penalty.</span>
+
+<span class="sd">        :return: A dictionary containing student id as key and the final submission timestamp as the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">student_num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">available_classes</span><span class="p">,</span> <span class="n">lab_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_selection</span><span class="p">()</span>
+
+        <span class="c1"># Extract current deadline information from the config file</span>
+        <span class="n">current_deadline</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">penalties</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_deadline_info</span><span class="p">(</span><span class="n">deadline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">marking</span><span class="o">.</span><span class="n">deadline</span><span class="p">,</span>
+                                                                          <span class="n">assign</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">marking</span><span class="o">.</span><span class="n">assign</span><span class="p">)</span>
+
+        <span class="c1"># Create a dictionary containing the final submission times of the students</span>
+        <span class="n">submission_times</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">file_handler</span><span class="o">.</span><span class="n">get_submission_times</span><span class="p">(</span><span class="n">available_classes</span><span class="o">=</span><span class="n">available_classes</span><span class="p">,</span>
+                                                                     <span class="n">lab_path</span><span class="o">=</span><span class="n">lab_path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">curr_class</span> <span class="ow">in</span> <span class="n">available_classes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">curr_class</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">class_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lab_path</span><span class="p">,</span> <span class="n">curr_class</span><span class="p">)</span>
+            <span class="n">student_dirs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">class_path</span><span class="p">)</span>
+            <span class="n">student_dirs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">student</span> <span class="ow">in</span> <span class="n">student_dirs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">student</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="n">student_num_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">student_num</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Formatting for printing to the terminal</span>
+                <span class="k">if</span> <span class="n">student</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+                    <span class="c1"># Checks whether the logfile is empty</span>
+                    <span class="k">if</span> <span class="n">errors</span><span class="p">[</span><span class="n">student</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;IndexError&quot;</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">student_num_str</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">curr_class</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">student</span><span class="si">}</span><span class="s2"> &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;Log file cannot be read! </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                    <span class="c1"># Checks whether the logfile is missing</span>
+                    <span class="k">elif</span> <span class="n">errors</span><span class="p">[</span><span class="n">student</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FileNotFound&quot;</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">student_num_str</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">WARNING</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">curr_class</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">student</span><span class="si">}</span><span class="s2"> &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;Log file not found! </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">student</span> <span class="ow">in</span> <span class="n">submission_times</span><span class="p">:</span>
+                    <span class="n">final_sub_time</span> <span class="o">=</span> <span class="n">submission_times</span><span class="p">[</span><span class="n">student</span><span class="p">]</span>
+                    <span class="n">late_submission</span> <span class="o">=</span> <span class="n">current_deadline</span> <span class="o">&lt;</span> <span class="n">final_sub_time</span>
+
+                    <span class="k">if</span> <span class="n">late_submission</span><span class="p">:</span>
+                        <span class="n">spacing</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Defined for formatting purposes</span>
+                        <span class="n">delay_time</span> <span class="o">=</span> <span class="n">final_sub_time</span> <span class="o">-</span> <span class="n">current_deadline</span>
+                        <span class="n">penalty</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">calculate_late_penalty</span><span class="p">(</span><span class="n">delayed_time</span><span class="o">=</span><span class="n">delay_time</span><span class="p">,</span> <span class="n">thresholds</span><span class="o">=</span><span class="n">thresholds</span><span class="p">,</span>
+                                                               <span class="n">penalties</span><span class="o">=</span><span class="n">penalties</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">penalty</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                            <span class="n">penalty_str</span> <span class="o">=</span> <span class="s1">&#39;rejected&#39;</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">penalty_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">penalty</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">%&quot;</span>
+
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">student_num_str</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">curr_class</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">student</span><span class="si">}</span><span class="s2"> &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;Late Sub Penalty: </span><span class="si">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">penalty_str</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">spacing</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">delay_time</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># If there are no issues with the logfile and the deadline is not exceeded just print the zID</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">student_num_str</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">curr_class</span><span class="p">,</span> <span class="n">student</span><span class="p">)</span>
+
+                <span class="n">student_num</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">submission_times</span></div>
+
+
+<div class="viewcode-block" id="Actions.check_new_submissions">
+<a class="viewcode-back" href="../../lab_marker.html#lab_marker.actions.Actions.check_new_submissions">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_new_submissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether there are updated or new submissions since the last download of a lab. If there are, the updated</span>
+<span class="sd">        submissions are printed to the console.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+
+        <span class="n">file_handler</span><span class="o">.</span><span class="n">clean_dir</span><span class="p">(</span><span class="n">dir_path</span><span class="o">=</span><span class="s2">&quot;.temp&quot;</span><span class="p">)</span>
+
+        <span class="n">r_avail_labs</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">get_available_labs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">remote_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">marking</span><span class="o">.</span><span class="n">term</span><span class="p">)</span>
+        <span class="n">selected_lab_num</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">print_and_get_selection</span><span class="p">(</span><span class="n">r_avail_labs</span><span class="p">)</span>
+        <span class="n">selected_lab</span> <span class="o">=</span> <span class="n">r_avail_labs</span><span class="p">[</span><span class="n">selected_lab_num</span><span class="p">]</span>
+        <span class="n">r_lab_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">remote_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">marking</span><span class="o">.</span><span class="n">term</span><span class="si">}</span><span class="s2">.work&quot;</span><span class="p">,</span> <span class="n">selected_lab</span><span class="p">)</span>
+
+        <span class="c1"># Get the paths of the log files relevant to the classes for the selected lab</span>
+        <span class="n">r_log_paths</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">get_log_paths</span><span class="p">(</span><span class="n">ssh_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span><span class="p">,</span> <span class="n">lab_path</span><span class="o">=</span><span class="n">r_lab_path</span><span class="p">,</span>
+                                           <span class="n">classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">marking</span><span class="o">.</span><span class="n">class_names</span><span class="p">)</span>
+
+        <span class="c1"># Download the log files for the selected lab from the remote server</span>
+        <span class="n">r_submissions</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">download_log_files</span><span class="p">(</span><span class="n">ssh_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span><span class="p">,</span> <span class="n">r_log_paths</span><span class="o">=</span><span class="n">r_log_paths</span><span class="p">,</span>
+                                                  <span class="n">selected_lab</span><span class="o">=</span><span class="n">selected_lab</span><span class="p">)</span>
+
+        <span class="c1"># Extract the submissions times from the downloaded log files</span>
+        <span class="n">new_sub_time</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">log_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s2">&quot;.temp&quot;</span><span class="p">):</span>
+            <span class="n">last_sub_time</span> <span class="o">=</span> <span class="n">file_handler</span><span class="o">.</span><span class="n">parse_time_from_log</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;.temp&quot;</span><span class="p">,</span> <span class="n">log_file</span><span class="p">))</span>
+            <span class="n">new_sub_time</span><span class="p">[</span><span class="n">log_file</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_sub_time</span>
+
+        <span class="c1"># Selected lab should be a subdirectory inside the all labs directory</span>
+        <span class="n">l_selected_lab_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">local_labs_path</span><span class="p">,</span> <span class="n">selected_lab</span><span class="p">)</span>
+        <span class="n">l_lab_classes</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">l_selected_lab_path</span><span class="p">)</span>
+
+        <span class="c1"># Get the last submission times from the downloaded lab</span>
+        <span class="n">old_sub_times</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">file_handler</span><span class="o">.</span><span class="n">get_submission_times</span><span class="p">(</span><span class="n">available_classes</span><span class="o">=</span><span class="n">l_lab_classes</span><span class="p">,</span>
+                                                             <span class="n">lab_path</span><span class="o">=</span><span class="n">l_selected_lab_path</span><span class="p">)</span>
+
+        <span class="n">updated_submissions</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">new_sub_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Iterate through the new submissions since it has the updated submission list</span>
+        <span class="k">for</span> <span class="n">submission</span> <span class="ow">in</span> <span class="n">new_sub_time</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">submission</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">old_sub_times</span><span class="p">:</span>
+                <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Found New Submission&quot;</span>
+            <span class="k">elif</span> <span class="n">old_sub_times</span><span class="p">[</span><span class="n">submission</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">new_sub_time</span><span class="p">[</span><span class="n">submission</span><span class="p">]:</span>
+                <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Updated Submission&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;zID&quot;</span><span class="p">:</span> <span class="n">submission</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">desc</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">new_sub_time</span><span class="p">[</span><span class="n">submission</span><span class="p">]}</span>
+            <span class="n">lab_class</span> <span class="o">=</span> <span class="n">r_submissions</span><span class="p">[</span><span class="n">submission</span><span class="p">]</span><span class="o">.</span><span class="n">lab_class</span>
+            <span class="n">updated_submissions</span><span class="p">[</span><span class="n">lab_class</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+            <span class="n">new_sub_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Found </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">new_sub_count</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2"> new submission(s)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Print out the new submissions found</span>
+        <span class="k">for</span> <span class="n">lab_class</span> <span class="ow">in</span> <span class="n">updated_submissions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">submission_record</span> <span class="ow">in</span> <span class="n">updated_submissions</span><span class="p">[</span><span class="n">lab_class</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKCYAN</span><span class="si">}</span><span class="s1">[</span><span class="si">{</span><span class="n">lab_class</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">submission_record</span><span class="p">[</span><span class="s2">&quot;zID&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">WARNING</span><span class="si">}</span><span class="s1"> &#39;</span>
+                      <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">submission_record</span><span class="p">[</span><span class="s2">&quot;desc&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">submission_record</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">updated_submissions</span><span class="p">:</span>
+            <span class="n">download_new</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Do you want to download all updated/new submissions </span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKBLUE</span><span class="si">}</span><span class="s2">y/[n]?</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">download_new</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+                <span class="n">download_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="c1"># Combine new submissions from all classes to a single list</span>
+                <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">updated_submissions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">download_list</span> <span class="o">+=</span> <span class="n">value</span>
+
+                <span class="n">source_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">r_submissions</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;zID&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">r_path</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">download_list</span><span class="p">]</span>
+                <span class="c1"># Generate the destination path for each submission based on the folder structure</span>
+                <span class="n">destination_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">local_labs_path</span><span class="p">,</span> <span class="n">r_submissions</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;zID&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">lab</span><span class="p">,</span>
+                                                  <span class="n">r_submissions</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;zID&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">lab_class</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;zID&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">download_list</span><span class="p">]</span>
+
+                <span class="n">remote</span><span class="o">.</span><span class="n">download_selected</span><span class="p">(</span><span class="n">ssh_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span><span class="p">,</span> <span class="n">remote_paths</span><span class="o">=</span><span class="n">source_paths</span><span class="p">,</span>
+                                         <span class="n">local_paths</span><span class="o">=</span><span class="n">destination_paths</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Actions.extract_all_submissions">
+<a class="viewcode-back" href="../../lab_marker.html#lab_marker.actions.Actions.extract_all_submissions">[docs]</a>
+    <span class="k">def</span> <span class="nf">extract_all_submissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterates through all student directories in a lab directory and extracts the content inside the file</span>
+<span class="sd">        &#39;submission.tar&#39;. Once the files are extracted, checks whether there are new .tar files created. If so, iterates</span>
+<span class="sd">         through all the new files and untar the new .tar files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get the path of the lab that nees to be extracted</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">extract_lab_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_selection</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">lab_class</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">extract_lab_path</span><span class="p">):</span>
+            <span class="c1"># Takes care of .DStore files</span>
+            <span class="k">if</span> <span class="n">lab_class</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">lab_class_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">extract_lab_path</span><span class="p">,</span> <span class="n">lab_class</span><span class="p">)</span>
+            <span class="n">lab_classes</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">lab_class_path</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">dir_path</span> <span class="ow">in</span> <span class="n">lab_classes</span><span class="p">:</span>
+                <span class="n">lab_classes</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extracting submissions for </span><span class="si">{</span><span class="n">lab_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lab_class_path</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">):</span>
+                    <span class="n">submitted_files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
+
+                    <span class="c1"># Select the submission.tar file inside the student directory</span>
+                    <span class="k">if</span> <span class="s2">&quot;submission.tar&quot;</span> <span class="ow">in</span> <span class="n">submitted_files</span><span class="p">:</span>
+                        <span class="n">file_handler</span><span class="o">.</span><span class="n">extract_all</span><span class="p">(</span><span class="n">tar_file_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;submission.tar&quot;</span><span class="p">),</span>
+                                                 <span class="n">extract_path</span><span class="o">=</span><span class="n">dir_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Actions.remove_extracted">
+<a class="viewcode-back" href="../../lab_marker.html#lab_marker.actions.Actions.remove_extracted">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_extracted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterates through all student directories under all classes in a lab path and removes all extracted files leaving</span>
+<span class="sd">        out only the student submitted .tar files and the log file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">lab_path_to_clear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_selection</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">Deleting extracted files from submissions</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">file_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">lab_class</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">lab_path_to_clear</span><span class="p">):</span>
+            <span class="c1"># Takes care of .DStore files</span>
+            <span class="k">if</span> <span class="n">lab_class</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">lab_class_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lab_path_to_clear</span><span class="p">,</span> <span class="n">lab_class</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">student_dir_path</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">lab_class_path</span><span class="p">):</span>
+                <span class="n">student_dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lab_class_path</span><span class="p">,</span> <span class="n">student_dir_path</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">student_dir_path</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">student_dir_path</span><span class="p">):</span>
+                        <span class="n">file_name</span><span class="p">,</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">file_name</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+                        <span class="c1"># Use regex to filter out the original .tar files (submission.tar, sub01.tar, ...)</span>
+                        <span class="k">elif</span> <span class="p">(</span><span class="n">file_ext</span> <span class="o">==</span> <span class="s2">&quot;.tar&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^sub(\d{1,3}$)&quot;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">))</span>
+                              <span class="ow">or</span> <span class="n">file_name</span> <span class="o">==</span> <span class="s2">&quot;submission&quot;</span> <span class="ow">or</span> <span class="n">file_name</span> <span class="o">==</span> <span class="s2">&quot;pre-submission&quot;</span><span class="p">):</span>
+                            <span class="k">continue</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">delete_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">student_dir_path</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">delete_path</span><span class="p">):</span>
+                                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">delete_path</span><span class="p">)</span>
+
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">file_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">delete_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Actions.download_labs">
+<a class="viewcode-back" href="../../lab_marker.html#lab_marker.actions.Actions.download_labs">[docs]</a>
+    <span class="k">def</span> <span class="nf">download_labs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connects to cse servers through SSH and downloads the submissions of all the classes defined in the config file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+
+        <span class="n">avail_labs</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">get_available_labs</span><span class="p">(</span><span class="n">ssh_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span><span class="p">,</span> <span class="n">remote_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">remote_path</span><span class="p">,</span>
+                                               <span class="n">term</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">marking</span><span class="o">.</span><span class="n">term</span><span class="p">)</span>
+
+        <span class="n">selected_lab_num</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">print_and_get_selection</span><span class="p">(</span><span class="n">avail_labs</span><span class="p">)</span>
+        <span class="n">selected_lab</span> <span class="o">=</span> <span class="n">avail_labs</span><span class="p">[</span><span class="n">selected_lab_num</span><span class="p">]</span>
+
+        <span class="c1"># Before downloading, check whether there is an existing lab downloaded before</span>
+        <span class="k">if</span> <span class="n">file_handler</span><span class="o">.</span><span class="n">check_pre_download_conditions</span><span class="p">(</span><span class="n">destination_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">local_labs_path</span><span class="p">,</span>
+                                                      <span class="n">lab_name</span><span class="o">=</span><span class="n">selected_lab</span><span class="p">):</span>
+            <span class="n">remote</span><span class="o">.</span><span class="n">download_labs_all_classes</span><span class="p">(</span><span class="n">ssh_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ssh_client</span><span class="p">,</span>
+                                             <span class="n">term</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">marking</span><span class="o">.</span><span class="n">term</span><span class="p">,</span>
+                                             <span class="n">lab_name</span><span class="o">=</span><span class="n">selected_lab</span><span class="p">,</span>
+                                             <span class="n">class_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">marking</span><span class="o">.</span><span class="n">class_names</span><span class="p">,</span>
+                                             <span class="n">save_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">local_labs_path</span><span class="p">,</span> <span class="n">selected_lab</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Actions.mark_lab_2">
+<a class="viewcode-back" href="../../lab_marker.html#lab_marker.actions.Actions.mark_lab_2">[docs]</a>
+    <span class="k">def</span> <span class="nf">mark_lab_2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Automatically runs the PingClient programs included in the submissions. Expects the PingSever to be up and</span>
+<span class="sd">        running on port 12000. (TODO: Add ability to be changed via the config file.)</span>
+<span class="sd">        This function is currently only implemented for Python and Java programs. (TODO: Implement for C)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">avail_classes</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">lab2_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">local_labs_path</span><span class="p">,</span> <span class="s1">&#39;Lab2&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">lab2_path</span><span class="p">):</span>
+                <span class="n">user_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Could not find Lab2 directory. [S]elect manually, [D]ownload from server, [Q]uit&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">user_input</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span>
+                    <span class="n">avail_classes</span><span class="p">,</span> <span class="n">lab2_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_selection</span><span class="p">()</span>
+                    <span class="k">break</span>
+
+                <span class="k">elif</span> <span class="n">user_input</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">download_labs</span><span class="p">()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">avail_classes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">avail_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">lab2_path</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)]</span>
+
+        <span class="n">individual</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Do you want to mark them individually? [Y]es, [N]o&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span>
+            <span class="n">class_num</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">print_and_get_selection</span><span class="p">(</span><span class="n">avail_classes</span><span class="p">,</span> <span class="n">selection_type</span><span class="o">=</span><span class="s1">&#39;class&#39;</span><span class="p">)</span>
+            <span class="n">selected_class</span> <span class="o">=</span> <span class="n">avail_classes</span><span class="p">[</span><span class="n">class_num</span><span class="p">]</span>
+            <span class="n">out_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">auto_outputs_dir</span><span class="p">,</span> <span class="s1">&#39;lab2&#39;</span><span class="p">,</span> <span class="n">selected_class</span><span class="p">)</span>
+
+            <span class="n">class_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lab2_path</span><span class="p">,</span> <span class="n">selected_class</span><span class="p">)</span>
+            <span class="n">mark_lab_2</span><span class="p">(</span><span class="n">class_path</span><span class="o">=</span><span class="n">class_path</span><span class="p">,</span> <span class="n">output_destination</span><span class="o">=</span><span class="n">out_path</span><span class="p">,</span> <span class="n">manual_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">avail_class</span> <span class="ow">in</span> <span class="n">avail_classes</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Marking submissions of </span><span class="si">{</span><span class="n">avail_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">out_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">auto_outputs_dir</span><span class="p">,</span> <span class="s1">&#39;lab2&#39;</span><span class="p">,</span> <span class="n">avail_class</span><span class="p">)</span>
+
+                <span class="n">class_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lab2_path</span><span class="p">,</span> <span class="n">avail_class</span><span class="p">)</span>
+                <span class="n">mark_lab_2</span><span class="p">(</span><span class="n">class_path</span><span class="o">=</span><span class="n">class_path</span><span class="p">,</span> <span class="n">output_destination</span><span class="o">=</span><span class="n">out_path</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ravin Gunawardena.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
